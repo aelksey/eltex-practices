@@ -262,15 +262,190 @@ module1  README.md
 
 11. Внесите изменение в основном каталоге, не забыв про git add/commit/push, выполните в каталоге с клоном: 
 	
-git fetch 
-	
+Изменения в основном каталоге:
+
+cp *.log eltex-practices/module1/task2
+
+ls eltex-practices/module1/task2
+
+practice2_eltex_pg1_v14_part1.log  practice2_eltex_pg1_v14_part2.log  practice2_eltex_pg1_v14_part3.log
+
+cd eltex-practices
+
+git add .
+
+git commit -m "task2 added"
+
+[main 0ae5569] task2 added
+ 3 files changed, 1223 insertions(+)
+ create mode 100644 module1/task2/practice2_eltex_pg1_v14_part1.log
+ create mode 100644 module1/task2/practice2_eltex_pg1_v14_part2.log
+ create mode 100644 module1/task2/practice2_eltex_pg1_v14_part3.log
+
+git push
+
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (7/7), done.
+Writing objects: 100% (7/7), 13.44 KiB | 13.44 MiB/s, done.
+Total 7 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/aelksey/eltex-practices.git
+   35a755b..0ae5569  main -> main
+
+Каталог-клон:
+
+git fetch
+
+remote: Enumerating objects: 9, done.
+remote: Counting objects: 100% (9/9), done.
+remote: Compressing objects: 100% (7/7), done.
+remote: Total 7 (delta 0), reused 7 (delta 0), pack-reused 0 (from 0)
+Unpacking objects: 100% (7/7), 13.42 KiB | 146.00 KiB/s, done.
+From https://github.com/aelksey/eltex-practices
+   35a755b..0ae5569  main       -> origin/main
+
 git log origin/main
-	
+
+commit 0ae55696ce6f4b4077abe997a6bd0d3de5b02022 (origin/main, origin/HEAD)
+Author: aelksey <alekseyvlad1miroff@yandex.ru>
+Date:   Sun Jul 13 17:38:59 2025 +0000
+
+    task2 added
+
+commit 35a755b546aad4469295f34c9d69cbb1bc032188 (HEAD -> main)
+Author: aelksey <alekseyvlad1miroff@yandex.ru>
+Date:   Sun Jul 13 17:16:53 2025 +0000
+
+    added task1
+
+commit 48a122f6838499baa156637c243a5c843ba31186
+Author: aelksey <alekseyvlad1miroff@yandex.ru>
+Date:   Sun Jul 13 16:36:41 2025 +0000
+
+    first commit
+
 git diff main origin/main
-	
-git merge (для автоматического слияния используйте git pull вместо fetch+merge)
+
+diff --git a/module1/task2/practice2_eltex_pg1_v14_part1.log b/module1/task2/practice2_eltex_pg1_v14_part1.log
+new file mode 100644
+index 0000000..bdac320
+--- /dev/null
++++ b/module1/task2/practice2_eltex_pg1_v14_part1.log
+@@ -0,0 +1,427 @@
++export MYUSER=eltex_pg1_v14
++touch practice2_eltex_pg1_v14_part1.log
++
++2. Скопируйте созданный ключ на сервер 2 практики для пользователя root при помощи программы ssh-keyge
++
++ssh-copy-id -i ~/.ssh/id_rsa.pub root@172.16.9.18
++
++/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/eltex-pg1-v14/.ssh/id_rsa.pub"
++/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
++/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
++root@172.16.9.188's password:
++
++Number of key(s) added: 1
++
++Now try logging into the machine, with:   "ssh 'root@172.16.9.188'"
++and check to make sure that only the key(s) you wanted were added.
++
++3. Сравнить два ключа 
++
++cat .ssh/id_ed25519.pub ; cat .ssh/authorized_keys
++
++ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMh2sZBQ9juHjW5pG3GBlcg2hRtiqO2fH1pm9FX/9w6D root@eltex-practice2-pg1-v14
++
++ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC83s1BZlqljsepnsITctzT0LFnTvmoNCfsuWpN33QTt2fdcAIFxl6ndvaUCbGH/JZBsi+Pgxr2evVl8jKjiNwTcQbl25yxpwaYZoa0OxKqO9MtrNkOt3KKAEl2hoAhE5+rHneQn7ccqt3dQbmB7pHen4Kgy8UZVsDrx8IB1V0SVepX6yiNNNcgftwdQFBYc6yYFRu6n9cI7c1e3acuwFdmX97z5SCdmJ3eoXXOlilGyzh5wfbtaCkVZ1sDJEDkQDYEdcUwRAKKBLYs
+
+diff --git a/module1/task2/practice2_eltex_pg1_v14_part1.log b/module1/task2/practice2_eltex_pg1_v14_part1.log
+new file mode 100644
+index 0000000..bdac320
+--- /dev/null
++++ b/module1/task2/practice2_eltex_pg1_v14_part1.log
+@@ -0,0 +1,427 @@
++export MYUSER=eltex_pg1_v14
++touch practice2_eltex_pg1_v14_part1.log
++
++2. Скопируйте созданный ключ на сервер 2 практики для пользователя root при помощи программы ssh-keyge
++
++ssh-copy-id -i ~/.ssh/id_rsa.pub root@172.16.9.18
++
++/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/eltex-pg1-v14/.ssh/id_rsa.pub"
++/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
++/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
++root@172.16.9.188's password:
++
++Number of key(s) added: 1
++
++Now try logging into the machine, with:   "ssh 'root@172.16.9.188'"
++and check to make sure that only the key(s) you wanted were added.
++
++3. Сравнить два ключа 
++
++cat .ssh/id_ed25519.pub ; cat .ssh/authorized_keys
++
++ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMh2sZBQ9juHjW5pG3GBlcg2hRtiqO2fH1pm9FX/9w6D root@eltex-practice2-pg1-v14
++
++ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC83s1BZlqljsepnsITctzT0LFnTvmoNCfsuWpN33QTt2fdcAIFxl6ndvaUCbGH/JZBsi+Pgxr2evVl8jKjiNwTcQbl25yxpwaYZoa0OxKqO9MtrNkOt3KKAEl2hoAhE5+rHneQn7ccqt3dQbmB7pHen4Kgy8UZVsDrx8IB1V0SVepX6yiNNNcgftwdQFBYc6yYFRu6n9cI7c1e3acuwFdmX97z5SCdmJ3eoXXOlilGyzh5wfbtaCkVZ1sDJEDkQDYEdcUwRAKKBLYs+95Lowl2tcqW9/lzZHgU9yjnfwN3AGJaihoyhFQRQFSFCAIDpaUG3lOIwo3cmqTtvBR3dy2PPdGFXubf6UGppS2Ei9EYwPP5NUghJUN/mHFIUdPAG10dOx47JLcdNDA//1w8s7ymm7zl/eJsrKgi5eGoobQfQx0kThMWzAYjrHYmHMBM9trSmsBKZf7Z7P7jIdltPY3emFKnUVPaK3KVV87j1WiDqA7lRbGmFw4mguBY+xG4NEs= eltex-pg1-v14@eltex-2025-summer
++
++ls -l .ssh/
++total 12
++-rw------- 1 root root 585 Jul 11 04:19 authorized_keys
++-rw------- 1 root root 419 Jul 11 04:02 id_ed25519
++-rw-r--r-- 1 root root 110 Jul 11 04:02 id_ed25519.pub
++
++4. Cоздайте пользователя user1 при помощи команды useradd, укажите необходимость создания домашнего каталога и shell /bin/bash. Создайте пароль пользователю user1
++
++useradd user1 -m -s /bin/bash -p user1
++
++5. Создайте пользователя user2 и user3 при помощи команды adduser
++
++useradd user2 -m
++useradd user3 -m
++
++6. Для пользователя user3 смените shell на /usr/sbin/nologin (man usermod), выполните вход под этим пользователем при помощи утилиты su, сначала без дополнительных параметров, затем с явным указанием shell /bin/bash в параметрах su. 
++Выполните logout
++
++usermod -s /usr/sbin/nologin user3
++
++root@eltex-practice2-pg1-v14:~# su user3
++This account is currently not available.
++
++su -s /bin/bash user3
++user3@eltex-practice2-pg1-v14:/root$ exit
++
++7. Создайте новую группу и добавьте её для всех пользователей user* как дополнительную, посмотрите список групп всех пользователей user*
++
++groupadd group_1
++
++usermod -aG group_1 user1
++usermod -aG group_1 user2
++usermod -aG group_1 user3
++
++cat /etc/group | grep "group_1"
++group_1:user1,user2,user3
++
++8. Создайте каталог /opt/share и назначьте группу из предыдущего пункта его владельцем, установите на этот каталог бит SGID, права для группы rwx.
++
++mkdir -p /opt/share
+
+
+git merge
+
+Updating 35a755b..0ae5569
+Fast-forward
+ module1/task2/practice2_eltex_pg1_v14_part1.log | 427 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ module1/task2/practice2_eltex_pg1_v14_part2.log | 519 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ module1/task2/practice2_eltex_pg1_v14_part3.log | 277 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 1223 insertions(+)
+ create mode 100644 module1/task2/practice2_eltex_pg1_v14_part1.log
+ create mode 100644 module1/task2/practice2_eltex_pg1_v14_part2.log
+ create mode 100644 module1/task2/practice2_eltex_pg1_v14_part3.log
 
 12. Повторите п.9 начиная с создания каталогов для отчета по второй практике
+
+См пункт 11.
 
 13.Отправьте ссылку на ваш репозиторий преподавателю в telegram, если в имени нет ФИО – дополните сообщение, пожалуйста. Вы конечно представлялись в общем чате, но искать в истории немножко тоскливо.
 
