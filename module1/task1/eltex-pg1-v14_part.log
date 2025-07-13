@@ -1,0 +1,63 @@
+screen -dm -S "`whoami`_part2"
+
+touch "$USER"_part.log
+
+ls + tab tab
+
+printenv HIST + tab tab
+
+echo "$HISTFILESIZE"
+
+export HISTTIMEFORMAT='%F %T '
+
+date
+
+history 1
+
+cat $HISTFILE
+
+PROMPT_COMMAND="history -a"
+
+echo $PROMPT_COMMAND
+
+date
+
+cat $HISTFILE
+
+export DATE
+
+DATE="`date '+%W %M %Y'`"
+
+echo $DATE
+
+export TIME
+
+TIME=`date '+%X'`
+
+echo $TIME
+
+export DATE_TIME
+
+DATE_TIME=$DATE' '$TIME
+
+pwd
+
+ls -a /bin /sbin | grep '[[:digit:]]'
+
+export PS1
+
+
+PS1=$USER@$HOSTNAME-`date '+%H'`:`date '+%M'`
+
+echo Hello!
+
+sh
+
+echo Hello!
+
+exit
+
+mkdir `date '+%Y'`-{01..12}
+
+ls
+

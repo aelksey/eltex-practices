@@ -1,0 +1,117 @@
+mkdir -p D1/D2/D3
+
+ls . D1 D1/D2
+
+.:
+2025-01
+2025-02
+2025-03
+2025-04
+2025-05
+2025-06
+2025-07
+2025-08
+2025-09
+2025-10
+2025-11
+2025-12
+D1
+eltex-pg1-v14_part3.log
+eltex-pg1-v14_part.log
+report_part1.txt
+
+D1:
+D2
+
+D1/D2:
+D3
+
+touch ./D1/D2/file.txt
+
+ls ./D1/D2
+
+D3
+file.txt
+
+echo some text >> ./D1/D2/file.txt
+
+cat ./D1/D2/file.txt
+
+some text
+
+Symbolic Link
+
+ln -s D1/D2/file.txt D1/D2/D3
+
+ls -l D1/D2/D3
+
+total 0
+
+lrwxrwxrwx 1 eltex-pg1-v14 eltex-pg1-v14 14 Jul  7 23:52 file.txt -> D1/D2/file.txt
+
+Hard Link
+
+ln D1/D2/file.txt D1/D2/D3/hard-link
+
+ls -l D1/D2/D3/hard-link
+
+-rw-r--r-- 2 eltex-pg1-v14 eltex-pg1-v14 10 Jul  7 23:40 D1/D2/D3/hard-link
+
+cat D1/D2/D3/hard-link
+
+some text
+
+mv D1/D2/file.txt D1
+
+ls D1
+
+D2
+
+file.txt
+
+cat D1/D2/D3/hard-link
+
+some text
+
+cat D1/D2/D3/soft-link
+
+du -a -h --threshold 20M ../../../ | sort
+find . -mtime -1 -ls
+       12      4 drwx------  16 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  8 00:53 .
+       54      4 -rw-r--r--   1 eltex-pg1-v14 eltex-pg1-v14      533 Jul  7 22:55 ./eltex-pg1-v14_part.log
+       43      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-03
+       38     12 -rw-------   1 eltex-pg1-v14 eltex-pg1-v14    10476 Jul  8 00:53 ./.viminfo
+       46      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-06
+       26      4 drwx------   3 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 11:04 ./.config
+       27      4 drwx------   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 11:04 ./.config/procps
+       59     12 -rw-r--r--   1 eltex-pg1-v14 eltex-pg1-v14    12288 Jul  8 00:53 ./.eltex-pg1-v14_part3.log.swp
+       52      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-12
+       33      4 -rw-r--r--   1 eltex-pg1-v14 eltex-pg1-v14      141 Jul  7 11:45 ./report_part1.txt
+       35      4 -rw-------   1 eltex-pg1-v14 eltex-pg1-v14       20 Jul  8 00:21 ./.lesshst
+       24      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-01
+       51      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-11
+       29      0 -rw-r--r--   1 eltex-pg1-v14 eltex-pg1-v14        0 Jul  7 23:29 ./.log
+       47      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-07
+       48      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-08
+       53      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  8 00:19 ./D1
+       57      4 -rw-r--r--   1 eltex-pg1-v14 eltex-pg1-v14       10 Jul  7 23:40 ./D1/file.txt
+       49      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-09
+       55      4 -rw-r--r--   1 eltex-pg1-v14 eltex-pg1-v14      821 Jul  8 00:58 ./eltex-pg1-v14_part3.log
+       25     16 -rw-------   1 eltex-pg1-v14 eltex-pg1-v14    13019 Jul  8 00:55 ./.bash_history
+       44      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-04
+       45      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-05
+       30      4 -rw-r--r--   1 eltex-pg1-v14 eltex-pg1-v14     4079 Jul  8 00:41 ./eltex-pg1-v14_part3_gt50M.log
+       42      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-02
+       50      4 drwxr-xr-x   2 eltex-pg1-v14 eltex-pg1-v14     4096 Jul  7 22:53 ./2025-10
+
+whereis find
+
+find: /usr/bin/find /usr/share/man/man1/find.1.gz /usr/share/info/find.info-1.gz /usr/share/info/find.info-2.gz /usr/share/info/find.info.gz
+
+file /usr/bin/find
+
+/usr/bin/find: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=5545a6c7162d325fbe5ffabcbfe4e5521b66ce70, for GNU/Linux 3.2.0, stripped
+
+file ../../../boot/initrd.img-6.1.0-32-amd64
+../../../boot/initrd.img-6.1.0-32-amd64: ASCII cpio archive (SVR4 with no CRC)
+
