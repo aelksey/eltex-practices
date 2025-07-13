@@ -1,0 +1,277 @@
+Лог работы – команды и результаты в записать в файл practice2_${MYUSER}_part3.log, где MYUSER – переменная с именем пользователя практики 1.:
+
+export MYUSER=eltex_pg1_v14
+
+touch practice2_"$MYUSER"_part3.log
+
+ls -lh | grep practice2_eltex_pg1_v14_part3.log 
+
+-rw-r--r--   1 root root    0 Jul 13 15:59 practice2_eltex_pg1_v14_part3.log
+
+1. Зарегистрируйтесь на сайте github.com, если еще не сделали этого ранее:
+
+Рега completed
+
+2. Установите параметры git в соответствии с вашими учетными данными:
+
+git config --global user.name "aelksey"
+
+git config --global user.email  "alekseyvlad1miroff@yandex.ru"
+
+git config --global init.defaultBranch main
+
+3. Установите непосредственно программу git и набор утилит для управления github из командной строки gh:
+
+apt update
+
+Hit:1 http://ru.archive.ubuntu.com/ubuntu noble InRelease
+Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:3 http://ru.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://ru.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:5 http://ru.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [163 kB]
+Get:6 http://ru.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+Get:7 http://ru.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [376 kB]
+Get:8 http://ru.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]     
+Get:9 http://ru.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7,084 B]
+Get:10 http://ru.archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]   
+Get:11 http://ru.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [28.4 kB]   
+Get:12 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [21.6 kB]           
+Get:13 http://ru.archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]                        
+Get:14 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+Get:15 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [52.2 kB]
+Get:16 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [208 B]
+Fetched 1,029 kB in 1s (1,212 kB/s)        
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+58 packages can be upgraded. Run 'apt list --upgradable' to see them.
+
+
+apt install git gh
+
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+git is already the newest version (1:2.43.0-1ubuntu7.3).
+git set to manually installed.
+The following NEW packages will be installed:
+  gh
+0 upgraded, 1 newly installed, 0 to remove and 58 not upgraded.
+Need to get 8,826 kB of archives.
+After this operation, 45.4 MB of additional disk space will be used.
+Do you want to continue? [Y/n] Y
+Get:1 http://ru.archive.ubuntu.com/ubuntu noble-updates/universe amd64 gh amd64 2.45.0-1ubuntu0.2 [8,826 kB]
+Fetched 8,826 kB in 2s (3,849 kB/s)
+Selecting previously unselected package gh.
+(Reading database ... 124882 files and directories currently installed.)
+Preparing to unpack .../gh_2.45.0-1ubuntu0.2_amd64.deb ...
+Unpacking gh (2.45.0-1ubuntu0.2) ...
+Setting up gh (2.45.0-1ubuntu0.2) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Scanning processes...                                                                                                                                       
+Scanning candidates...                                                                                                                                      
+Scanning linux images...                                                                                                                                    
+
+Pending kernel upgrade!
+Running kernel version:
+  6.8.0-55-generic
+Diagnostics:
+  The currently running kernel version is not the expected kernel version 6.8.0-63-generic.
+
+Restarting the system to load the new kernel will not be handled automatically, so you should consider rebooting.
+
+Restarting services...
+
+Service restarts being deferred:
+ /etc/needrestart/restart.d/dbus.service
+ systemctl restart systemd-logind.service
+ systemctl restart unattended-upgrades.service
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+
+4. Создайте ключ ssh: 
+
+ssh-keygen -t ed25519 -f ~/.ssh/aelksey
+
+Generating public/private ed25519 key pair.
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /root/.ssh/aelksey
+Your public key has been saved in /root/.ssh/aelksey.pub
+The key fingerprint is:
+SHA256:ShMwt6b3MmBT1r/DRAAh72dHeTCDSElsNRpFFlfduVo root@eltex-practice2-pg1-v14
+The key's randomart image is:
++--[ED25519 256]--+
+|    ++BOOo=... ..|
+|     *=*.+ =  ...|
+|     .O . + .   .|
+|     * . + .   E |
+|    = = S +   o  |
+|   . = * + . .   |
+|      + . +      |
+|       o   .     |
+|                 |
++----[SHA256]-----+
+
+cat /root/.ssh/aelksey.pub 
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO4wuv4phSaJfGV9OOrqil3787aqzj3dkDCRzBFwgyaP root@eltex-practice2-pg1-v14
+
+5. Подключите этот комьютер к github:
+
+gh auth login
+
+? What account do you want to log into? GitHub.com
+? What is your preferred protocol for Git operations on this host? SSH
+? Upload your SSH public key to your GitHub account? /root/.ssh/aelksey.pub
+? Title for your SSH key: eltex-practice2-pg1-v14
+? How would you like to authenticate GitHub CLI? Login with a web browser
+
+6. Укажите автоматическую авторизацию только для сайта github.com:
+
+gh auth setup-git --hostname github.com
+
+7. Убедиться, что все в порядке можно командой: 
+
+gh auth status
+
+github.com
+  ✓ Logged in to github.com account aelksey (/root/.config/gh/hosts.yml)
+  - Active account: true
+  - Git operations protocol: ssh
+  - Token: gho_************************************
+  - Token scopes: 'admin:public_key', 'gist', 'read:org', 'repo'
+
+8. Создайте репозиторий на сервере github:
+
+gh repo create --public eltex-practices
+
+✓ Created repository aelksey/eltex-practices on GitHub
+  https://github.com/aelksey/eltex-practices
+
+9. Пора наполнить его:
+
+mkdir ~/eltex-practices && cd ~/eltex-practices
+
+echo "# Repo for my eltex practices; Student: Vladimirov Aleksey" >> README.md
+
+git init
+
+Initialized empty Git repository in /root/eltex-practices/.git/
+
+git add README.md
+
+git commit -m "first commit"
+
+[main (root-commit) 48a122f] first commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+
+git branch -M main
+
+git remote add origin https://github.com/aelksey/eltex-practices.git
+
+git status
+
+On branch main
+nothing to commit, working tree clean
+
+git push -u origin main 
+
+Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 275 bytes | 275.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/aelksey/eltex-practices.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+
+mkdir -p module1/task1
+
+mkdir module1/task2
+
+mkdir module1/task3
+
+// For some reason scp gets stuck on connection phase possibly cuz of firewall or smth
+
+scp -P 44556 -v -r eltex-pg1-v14@217.71.138.1:~/* module1/task1
+
+Executing: program /usr/bin/ssh host 217.71.138.1, user eltex-pg1-v14, command sftp
+OpenSSH_9.6p1 Ubuntu-3ubuntu13.11, OpenSSL 3.0.13 30 Jan 2024
+debug1: Reading configuration data /etc/ssh/ssh_config
+debug1: /etc/ssh/ssh_config line 19: include /etc/ssh/ssh_config.d/*.conf matched no files
+debug1: /etc/ssh/ssh_config line 21: Applying options for *
+debug1: Connecting to 217.71.138.1 [217.71.138.1] port 44556.
+
+Ctrl^C
+
+ls
+
+eltex-pg1-v14_part3_gt50M.log  eltex-pg1-v14_part3.log  eltex-pg1-v14_part.log  report_part1.txt
+
+git add .
+
+root@eltex-practice2-pg1-v14:~/eltex-practices/module1/task1# git commit -m "added task1"
+
+[main 35a755b] added task1
+ 4 files changed, 269 insertions(+)
+ create mode 100644 module1/task1/eltex-pg1-v14_part.log
+ create mode 100644 module1/task1/eltex-pg1-v14_part3.log
+ create mode 100644 module1/task1/eltex-pg1-v14_part3_gt50M.log
+ create mode 100644 module1/task1/report_part1.txt
+
+git push
+
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 2 threads
+Compressing objects: 100% (7/7), done.
+Writing objects: 100% (8/8), 2.58 KiB | 2.58 MiB/s, done.
+Total 8 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/aelksey/eltex-practices.git
+   48a122f..35a755b  main -> main
+
+
+10. Клонируйте ваш репозиторий:
+	
+mkdir eltex-practices_clone && cd eltex-practices_clone
+
+git clone https://github.com/aelksey/eltex-practices.git .
+
+Cloning into '.'...
+
+remote: Enumerating objects: 11, done.
+
+remote: Counting objects: 100% (11/11), done.
+
+remote: Compressing objects: 100% (9/9), done.
+
+remote: Total 11 (delta 0), reused 11 (delta 0), pack-reused 0 (from 0)
+
+Receiving objects: 100% (11/11), done.
+
+ls
+
+module1  README.md
+
+11. Внесите изменение в основном каталоге, не забыв про git add/commit/push, выполните в каталоге с клоном: 
+	
+git fetch 
+	
+git log origin/main
+	
+git diff main origin/main
+	
+git merge (для автоматического слияния используйте git pull вместо fetch+merge)
+
+12. Повторите п.9 начиная с создания каталогов для отчета по второй практике
+
+13.Отправьте ссылку на ваш репозиторий преподавателю в telegram, если в имени нет ФИО – дополните сообщение, пожалуйста. Вы конечно представлялись в общем чате, но искать в истории немножко тоскливо.
+
+

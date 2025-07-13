@@ -1,0 +1,427 @@
+export MYUSER=eltex_pg1_v14
+touch practice2_eltex_pg1_v14_part1.log
+
+2. Скопируйте созданный ключ на сервер 2 практики для пользователя root при помощи программы ssh-keyge
+
+ssh-copy-id -i ~/.ssh/id_rsa.pub root@172.16.9.18
+
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/eltex-pg1-v14/.ssh/id_rsa.pub"
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+root@172.16.9.188's password:
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'root@172.16.9.188'"
+and check to make sure that only the key(s) you wanted were added.
+
+3. Сравнить два ключа 
+
+cat .ssh/id_ed25519.pub ; cat .ssh/authorized_keys
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMh2sZBQ9juHjW5pG3GBlcg2hRtiqO2fH1pm9FX/9w6D root@eltex-practice2-pg1-v14
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC83s1BZlqljsepnsITctzT0LFnTvmoNCfsuWpN33QTt2fdcAIFxl6ndvaUCbGH/JZBsi+Pgxr2evVl8jKjiNwTcQbl25yxpwaYZoa0OxKqO9MtrNkOt3KKAEl2hoAhE5+rHneQn7ccqt3dQbmB7pHen4Kgy8UZVsDrx8IB1V0SVepX6yiNNNcgftwdQFBYc6yYFRu6n9cI7c1e3acuwFdmX97z5SCdmJ3eoXXOlilGyzh5wfbtaCkVZ1sDJEDkQDYEdcUwRAKKBLYs+95Lowl2tcqW9/lzZHgU9yjnfwN3AGJaihoyhFQRQFSFCAIDpaUG3lOIwo3cmqTtvBR3dy2PPdGFXubf6UGppS2Ei9EYwPP5NUghJUN/mHFIUdPAG10dOx47JLcdNDA//1w8s7ymm7zl/eJsrKgi5eGoobQfQx0kThMWzAYjrHYmHMBM9trSmsBKZf7Z7P7jIdltPY3emFKnUVPaK3KVV87j1WiDqA7lRbGmFw4mguBY+xG4NEs= eltex-pg1-v14@eltex-2025-summer
+
+ls -l .ssh/
+total 12
+-rw------- 1 root root 585 Jul 11 04:19 authorized_keys
+-rw------- 1 root root 419 Jul 11 04:02 id_ed25519
+-rw-r--r-- 1 root root 110 Jul 11 04:02 id_ed25519.pub
+
+4. Cоздайте пользователя user1 при помощи команды useradd, укажите необходимость создания домашнего каталога и shell /bin/bash. Создайте пароль пользователю user1
+
+useradd user1 -m -s /bin/bash -p user1
+
+5. Создайте пользователя user2 и user3 при помощи команды adduser
+
+useradd user2 -m
+useradd user3 -m
+
+6. Для пользователя user3 смените shell на /usr/sbin/nologin (man usermod), выполните вход под этим пользователем при помощи утилиты su, сначала без дополнительных параметров, затем с явным указанием shell /bin/bash в параметрах su. 
+Выполните logout
+
+usermod -s /usr/sbin/nologin user3
+
+root@eltex-practice2-pg1-v14:~# su user3
+This account is currently not available.
+
+su -s /bin/bash user3
+user3@eltex-practice2-pg1-v14:/root$ exit
+
+7. Создайте новую группу и добавьте её для всех пользователей user* как дополнительную, посмотрите список групп всех пользователей user*
+
+groupadd group_1
+
+usermod -aG group_1 user1
+usermod -aG group_1 user2
+usermod -aG group_1 user3
+
+cat /etc/group | grep "group_1"
+group_1:user1,user2,user3
+
+8. Создайте каталог /opt/share и назначьте группу из предыдущего пункта его владельцем, установите на этот каталог бит SGID, права для группы rwx.
+
+mkdir -p /opt/share
+
+chgrp group_1 /opt/share
+ls -l /opt/
+
+total 4
+drwxr-xr-x 2 root group_1 4096 Jul 11 13:07 share
+
+chmod g+r+w+x+s /opt/share ; ls -l /opt/
+
+total 4
+drwxrwsr-x 2 root group_1 4096 Jul 11 13:07 share
+
+9. Для user1 задайте перманентно umask, снимающий право чтения для «прочих»
+
+su user1
+echo "umask 0004" >> ~/.profile
+cat ~/.profile
+ 
+# ~/.profile: executed by the command interpreter for login shells.
+# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+# exists.
+# see /usr/share/doc/bash/examples/startup-files for examples.
+# the files are located in the bash-doc package.
+
+# the default umask is set in /etc/profile; for setting the umask
+# for ssh logins, install and configure the libpam-umask package.
+#umask 022
+
+# if running bash
+if [ -n "$BASH_VERSION" ]; then
+    # include .bashrc if it exists
+    if [ -f "$HOME/.bashrc" ]; then
+	. "$HOME/.bashrc"
+    fi
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+umask 0004
+
+10. Создайте каждым из пользователей новые файлы в каталоге /opt/share, удалите файлы созданные другими пользователями
+
+Создание файлов:
+
+root:
+
+touch /opt/share/root ; ls -l /opt/share
+-rw-r--r-- 1 root group_1 0 Jul 12 11:10 root
+
+user1:
+
+touch /opt/share/user1 ; ls -l /opt/share | grep user1
+-rw-rw-r-- 1 user1 group_1 0 Jul 12 11:12 user1
+
+user2:
+
+touch /opt/share/user2 ; ls -l /opt/share | grep user2
+-rw-rw-r-- 1 user2 group_1 0 Jul 12 11:13 user2
+
+user3:
+
+touch /opt/share/user3 ; ls -l /opt/share | grep user3
+-rw-rw-r-- 1 user3 group_1 0 Jul 12 11:14 user3
+
+
+Удаление файлов:
+
+root:
+
+ls -l /opt/share
+
+total 0
+-rw-r--r-- 1 root  group_1 0 Jul 12 11:20 root
+-rw-rw-r-- 1 user1 group_1 0 Jul 12 11:20 user1
+-rw-rw-r-- 1 user2 group_1 0 Jul 12 11:21 user2
+-rw-rw-r-- 1 user3 group_1 0 Jul 12 11:22 user3
+
+rm -f /opt/share/user*
+ls -l /opt/share
+total 0
+-rw-r--r-- 1 root group_1 0 Jul 12 11:20 root
+
+11. Повторите предыдущий пункт, предварительно установив sticky bit на каталоге /opt/share
+
+chmod +t /opt/share
+ls -ld /opt/share
+drwxrwsr-t 2 root group_1 4096 Jul 12 11:33 /opt/share
+
+Создание файлов:
+
+root:
+
+touch /opt/share/root ; ls -l /opt/share | grep root
+-rw-r--r-- 1 root group_1 0 Jul 12 11:41 root
+
+user1:
+
+su user1
+touch /opt/share/user1 ; ls -l /opt/share | grep user1
+-rw-rw-r-- 1 user1 group_1 0 Jul 12 11:42 user1
+
+user2:
+
+su user2
+touch /opt/share/root ; ls -l /opt/share | grep root
+ls -l /opt/share | grep user2
+-rw-rw-r-- 1 user2 group_1 0 Jul 12 11:43 user2
+
+user3:
+
+touch /opt/share/user3 ; ls -l /opt/share | grep user3
+-rw-rw-r-- 1 user3 group_1 0 Jul 12 11:44 user3
+
+Удаление файлов:
+
+root:
+
+ls -l /opt/share/
+
+total 0
+-rw-r--r-- 1 root  group_1 0 Jul 12 11:41 root
+-rw-rw-r-- 1 user1 group_1 0 Jul 12 11:42 user1
+-rw-rw-r-- 1 user2 group_1 0 Jul 12 11:43 user2
+-rw-rw-r-- 1 user3 group_1 0 Jul 12 11:44 user3
+
+rm -f /opt/share/user*
+
+ls -l /opt/share/
+
+total 0
+-rw-r--r-- 1 root group_1 0 Jul 12 11:41 root
+
+12. Разрешите user1 выполнять привилегированную команду dmesg при помощи команды sudo, а user2 – при помощи скрипта на языке bash с установленным флагом SUID
+
+adduser user1 sudo
+
+su user1
+
+sudo dmesg
+
+[    0.000000] Linux version 6.8.0-55-generic (buildd@lcy02-amd64-095) (x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #57-Ubuntu SMP PREEMPT_DYNAMIC Wed Feb 12 23:42:21 UTC 2025 (Ubuntu 6.8.0-55.57-generic 6.8.12)
+[    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.8.0-55-generic root=/dev/mapper/ubuntu--vg-ubuntu--lv ro
+[    0.000000] KERNEL supported cpus:
+[    0.000000]   Intel GenuineIntel
+[    0.000000]   AMD AuthenticAMD
+[    0.000000]   Hygon HygonGenuine
+[    0.000000]   Centaur CentaurHauls
+[    0.000000]   zhaoxin   Shanghai  
+[    0.000000] BIOS-provided physical RAM map:
+
+
+chmod u+s /usr/bin/dmesg 
+
+su user2
+
+dmesg
+
+[    0.000000] Linux version 6.8.0-55-generic (buildd@lcy02-amd64-095) (x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #57-Ubuntu SMP PREEMPT_DYNAMIC Wed Feb 12 23:42:21 UTC 2025 (Ubuntu 6.8.0-55.57-generic 6.8.12)
+[    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.8.0-55-generic root=/dev/mapper/ubuntu--vg-ubuntu--lv ro
+[    0.000000] KERNEL supported cpus:
+[    0.000000]   Intel GenuineIntel
+[    0.000000]   AMD AuthenticAMD
+[    0.000000]   Hygon HygonGenuine
+[    0.000000]   Centaur CentaurHauls
+[    0.000000]   zhaoxin   Shanghai  
+[    0.000000] BIOS-provided physical RAM map:
+
+13. Для всех пользователей user* задайте время действия пароля – 10 дней.
+
+chage -M 10 user1
+chage -M 10 user2
+chage -M 10 user3
+
+14. Отредактируйте файл /etc/motd, вписав туда свое имя и фамилию
+
+touch /etc/motd
+
+echo "Алексей Владимиров" >> /etc/motd
+
+cat /etc/motd
+
+Алексей Владимиров
+
+15. Создайте копию содержимого каталога /etc в каталог /root/etc_backup при помощи программы rcync
+
+mkdir /root/etc_backup
+
+ls -ld /root/etc_backup/
+
+drwxr-xr-x 2 root root 4096 Jul 13 03:32 /root/etc_backup/
+
+rsync -ra /etc/* /root/etc_backup
+
+ls -l /root/etc_backup/
+
+-rw-r--r-- 1 root root       3444 Jul  5  2023 adduser.conf
+drwxr-xr-x 2 root root       4096 Feb 16 21:04 alternatives
+drwxr-xr-x 2 root root       4096 Feb 16 20:57 apparmor
+drwxr-xr-x 9 root root       4096 Feb 16 21:04 apparmor.d
+drwxr-xr-x 3 root root       4096 Jul 12 06:27 apport
+drwxr-xr-x 9 root root       4096 Mar 12 18:06 apt
+-rw-r--r-- 1 root root       2319 Mar 31  2024 bash.bashrc
+-rw-r--r-- 1 root root         45 Feb 16 21:04 bash_completion
+drwxr-xr-x 2 root root       4096 Jul 12 06:45 bash_completion.d
+-rw-r--r-- 1 root root        367 Aug  2  2022 bindresvport.blacklist
+drwxr-xr-x 2 root root       4096 Oct 17  2024 binfmt.d
+drwxr-xr-x 2 root root       4096 Feb 16 21:04 byobu
+drwxr-xr-x 3 root root       4096 Feb 16 20:57 ca-certificates
+-rw-r--r-- 1 root root       6288 Feb 16 20:58 ca-certificates.conf
+
+16. Заархивируйте содержимое каталога /root/etc_backup архиватором tar, используйте алгоритмы сжатия gzip, bzip2, 7zip, сравните размеры полученных файлов
+
+Архив gzip:
+
+tar -czf etc_backup-gzip /root/etc_backup
+
+tar: Removing leading `/' from member names
+
+ls -lh | grep etc_backup-gzip
+
+-rw-r--r--   1 root root 582K Jul 13 04:34 etc_backup-gzip
+
+Архив bzip2:
+
+tar -cjf etc_backup-bzip2 /root/etc_backup
+
+tar: Removing leading `/' from member names
+
+ls -lh | grep etc_backup-bzip2
+
+-rw-r--r--   1 root root 553K Jul 13 04:42 etc_backup-bzip2
+
+Архив 7zip:
+
+tar cf - /root/etc_backup | 7z a -si etc_backup-7zip.tar.7z
+
+tar: Removing leading `/' from member names
+7-Zip 23.01 (x64) : Copyright (c) 1999-2023 Igor Pavlov : 2023-06-20
+64-bit locale=en_US.UTF-8 Threads:2 OPEN_MAX:1024
+Creating archive: etc_backup-7zip.tar.7z
+Add new data to archive: 1 file
+Files read from disk: 1
+Archive size: 485995 bytes (475 KiB)
+Everything is Ok
+
+-lh | grep etc_backup-7zip.tar.7z
+ 
+-rw-r--r--   1 root root 475K Jul 13 04:46 etc_backup-7zip.tar.7z
+
+
+17. Отредактируйте файл /etc/motd, вписав туда текущую дату и время, синхронизируйте каталог /root/etc_backup с каталогом /etc при помощи rsync, добавьте файл motd в архив, сжатый gzip
+
+echo "`date +%D` `date +%X`" >> /etc/motd
+
+cat /etc/motd
+
+Алексей Владимиров
+07/13/25 04:51:34 AM
+
+rsync -anv /root/etc_backup /etc/
+
+sending incremental file list
+
+sent 70,008 bytes  received 269 bytes  140,554.00 bytes/sec
+total size is 2,364,925  speedup is 33.65 (DRY RUN)
+
+ls -lh /etc/ | grep etc_backup
+
+drwxr-xr-x 109 root root      4.0K Jul 13 03:37 etc_backup
+
+tar -A -f etc_backup-gzip /etc/motd
+
+tar: Cannot update compressed archives
+tar: Error is not recoverable: exiting now
+
+18. Сравните содержимое архива, упакованного bzip2 с содержимым каталога /root/etc_backup
+
+mkdir etc_backup-bzip2-unpacked
+
+tar -xf etc_backup-bzip2 -C etc_backup-bzip2-unpacked
+
+ls etc_backup-bzip2-unpacked/root/etc_backup/
+
+adduser.conf            cron.hourly           fstab            iproute2       login.defs      nanorc               plymouth     rpc            subuid-            update-motd.d
+alternatives            cron.monthly          fuse.conf        iscsi          logrotate.conf  needrestart          pm           rsyslog.conf   sudo.conf          update-notifier
+apparmor                crontab               fwupd            issue          logrotate.d     netconfig            polkit-1     rsyslog.d      sudoers            UPower
+apparmor.d              cron.weekly           gai.conf         issue.net      lsb-release     netplan              pollinate    screenrc       sudoers.d          usb_modeswitch.conf
+apport                  cron.yearly           gnutls           kernel         lvm             network              profile      security       sudo_logsrvd.conf  usb_modeswitch.d
+apt                     cryptsetup-initramfs  groff            landscape      machine-id      networkd-dispatcher  profile.d    selinux        supercat           vconsole.conf
+bash.bashrc             crypttab              group            ldap           magic           networks             protocols    sensors3.conf  sysctl.conf        vim
+bash_completion         dbus-1                group-           ld.so.cache    magic.mime      newt                 python3      sensors.d      sysctl.d           vmware-tools
+bash_completion.d       debconf.conf          grub.d           ld.so.conf     manpath.config  nftables.conf        python3.12   services       sysstat            vtrgb
+bindresvport.blacklist  debian_version        gshadow          ld.so.conf.d   mdadm           nsswitch.conf        qemu         sgml           systemd            wgetrc
+binfmt.d                default               gshadow-         legal          mime.types      opt                  rc0.d        shadow         terminfo           X11
+byobu                   deluser.conf          gss              libaudit.conf  mke2fs.conf     os-release           rc1.d        shadow-        thermald           xattr.conf
+ca-certificates         depmod.d              hdparm.conf      libblockdev    ModemManager    overlayroot.conf     rc2.d        shells         timezone           xdg
+ca-certificates.conf    dhcp                  host.conf        libibverbs.d   modprobe.d      PackageKit           rc3.d        skel           tmpfiles.d         xml
+cloud                   dhcpcd.conf           hosts            libnl-3        modules         pam.conf             rc4.d        sos            ubuntu-advantage   zsh_command_not_found
+console-setup           dpkg                  hosts.allow      locale.alias   modules-load.d  pam.d                rc5.d        ssh            ucf.conf
+credstore               e2scrub.conf          hosts.deny       locale.conf    motd            passwd               rc6.d        ssl            udev
+credstore.encrypted     environment           init.d           locale.gen     mtab            passwd-              rcS.d        subgid         udisks2
+cron.d                  ethertypes            initramfs-tools  localtime      multipath       perl                 resolv.conf  subgid-        ufw
+cron.daily              fonts                 inputrc          logcheck       multipath.conf  pki                  rmt          subuid         update-manager
+
+ls /root/etc_backup
+
+adduser.conf            cron.hourly           fstab            iproute2       login.defs      nanorc               plymouth     rpc            subuid-            update-motd.d
+alternatives            cron.monthly          fuse.conf        iscsi          logrotate.conf  needrestart          pm           rsyslog.conf   sudo.conf          update-notifier
+apparmor                crontab               fwupd            issue          logrotate.d     netconfig            polkit-1     rsyslog.d      sudoers            UPower
+apparmor.d              cron.weekly           gai.conf         issue.net      lsb-release     netplan              pollinate    screenrc       sudoers.d          usb_modeswitch.conf
+apport                  cron.yearly           gnutls           kernel         lvm             network              profile      security       sudo_logsrvd.conf  usb_modeswitch.d
+apt                     cryptsetup-initramfs  groff            landscape      machine-id      networkd-dispatcher  profile.d    selinux        supercat           vconsole.conf
+bash.bashrc             crypttab              group            ldap           magic           networks             protocols    sensors3.conf  sysctl.conf        vim
+bash_completion         dbus-1                group-           ld.so.cache    magic.mime      newt                 python3      sensors.d      sysctl.d           vmware-tools
+bash_completion.d       debconf.conf          grub.d           ld.so.conf     manpath.config  nftables.conf        python3.12   services       sysstat            vtrgb
+bindresvport.blacklist  debian_version        gshadow          ld.so.conf.d   mdadm           nsswitch.conf        qemu         sgml           systemd            wgetrc
+binfmt.d                default               gshadow-         legal          mime.types      opt                  rc0.d        shadow         terminfo           X11
+byobu                   deluser.conf          gss              libaudit.conf  mke2fs.conf     os-release           rc1.d        shadow-        thermald           xattr.conf
+ca-certificates         depmod.d              hdparm.conf      libblockdev    ModemManager    overlayroot.conf     rc2.d        shells         timezone           xdg
+ca-certificates.conf    dhcp                  host.conf        libibverbs.d   modprobe.d      PackageKit           rc3.d        skel           tmpfiles.d         xml
+cloud                   dhcpcd.conf           hosts            libnl-3        modules         pam.conf             rc4.d        sos            ubuntu-advantage   zsh_command_not_found
+console-setup           dpkg                  hosts.allow      locale.alias   modules-load.d  pam.d                rc5.d        ssh            ucf.conf
+credstore               e2scrub.conf          hosts.deny       locale.conf    motd            passwd               rc6.d        ssl            udev
+credstore.encrypted     environment           init.d           locale.gen     mtab            passwd-              rcS.d        subgid         udisks2
+cron.d                  ethertypes            initramfs-tools  localtime      multipath       perl                 resolv.conf  subgid-        ufw
+cron.daily              fonts                 inputrc          logcheck       multipath.conf  pki                  rmt          subuid         update-manager
+
+19. Распакуйте архивы etc_backup, упакованные gzip и 7zip в каталоги /root/etc_backup_gzip и /root/etc_backup_7zip, сравните программой diff файлы motd в этих каталогах.
+
+mkdir /root/etc_backup_gzip
+
+tar -xf etc_backup-gzip -C /root/etc_backup_gzip
+
+ls -lh /root/ | grep etc_backup_gzip
+
+drwxr-xr-x   3 root root 4.0K Jul 13 05:43 etc_backup_gzip
+
+mkdir /root/etc_backup_7zip
+
+7z x -so etc_backup-7zip.tar.7z | tar xf - -C /root/etc_backup_7zip
+
+root@eltex-practice2-pg1-v14:~# ls -lh /root/ | grep etc_backup_7zip
+
+drwxr-xr-x   3 root root 4.0K Jul 13 05:47 etc_backup_7zip
+
+diff etc_backup_gzip/root/etc_backup/motd etc_backup_7zip/root/etc_backup/motd
+
+cat etc_backup_gzip/root/etc_backup/motd ; cat etc_backup_7zip/root/etc_backup/motd
+
+Алексей Владимиров
+
+Алексей Владимиров
+
+
+
