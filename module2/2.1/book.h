@@ -6,13 +6,10 @@
 #define CAPACITY 100
 
 
-typedef struct book{
-    int size;
-    contact_t contacts[CAPACITY];
-} book_t;
+typedef struct book book_t;
 
-void add_c(book_t *b,contact_t *c);
-void delete_c(book_t *b,contact_t *c);
-void edit_c(book_t *b,contact_t *c,int s,char *v);
+book_t add_c(book_t b,contact_t c);
+book_t delete_c(book_t b,contact_t c);
+book_t edit_c(book_t b,contact_t c,int s,char v[]);
 
 #endif
