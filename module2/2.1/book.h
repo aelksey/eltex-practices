@@ -1,19 +1,18 @@
 #define BOOK_H_
 #ifndef BOOK_H_
 
-#define INITIAL_CAPACITY 100
-
 #include "contact.h"
 
-typedef struct book {
+#define CAPACITY 100
+
+
+typedef struct book{
     int size;
-    int capacity;
-    contact_t* contacts;
+    contact_t contacts[CAPACITY];
 } book_t;
 
-void add_c(contact_t *c);
-void edit_c(contact_t *c,int s);
-void delete_c(contact_t *c,int s);
-void delete_c(contact_t *c,int s);
+void add_c(book_t *b,contact_t *c);
+void delete_c(book_t *b,contact_t *c);
+void edit_c(book_t *b,contact_t *c,int s,char *v);
 
 #endif
