@@ -1,16 +1,33 @@
-#define CONTACT_H_
-#ifndef CONTACT_H_
+#pragma once
 
-typedef struct contact contact_t;
+#define BUFFER 20
+#define FIELDS 7
 
-typedef struct name name_t;
+typedef struct name {   
+    char firstname[BUFFER];
+    char lastname[BUFFER];
+} name_t;
 
-typedef struct job job_t;
+typedef struct job {
+    char workplace[BUFFER];
+    char role[BUFFER];
+} job_t;
 
-typedef struct socials socials_t;
+typedef struct socials {
+    char tg[BUFFER];
+    char ig[BUFFER];
+    char vk[BUFFER];
+}socials_t;
 
-void empty_c(contact_t c);
+typedef struct contact {
+    int id;
+    name_t name;
+    job_t job;
+    socials_t socials;
+} contact_t;
 
-contact_t init_c(int id, ...);
+contact_t empty_c(contact_t c);
 
-#endif
+contact_t init_c(int id, int count , ...);
+
+
