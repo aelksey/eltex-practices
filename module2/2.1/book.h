@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BOOK_H_
+#define BOOK_H_
 
 #include "contact.h"
 
@@ -12,3 +13,5 @@ typedef struct book{
 book_t add_c(book_t b,contact_t c);
 book_t delete_c(book_t b,int id);
 book_t edit_c(book_t b,contact_t c, int id);
+
+#endif

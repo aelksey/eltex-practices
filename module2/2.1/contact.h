@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONTACT_H_
+#define CONTACT_H_
 
 #define BUFFER 20
 #define FIELDS 7
@@ -30,4 +31,4 @@ contact_t empty_c(contact_t c);
 
 contact_t init_c(int id, int count , ...);
 
-
+#endif
