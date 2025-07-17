@@ -18,46 +18,28 @@ book_t add_c(book_t b,contact_t c){
 }
 
 book_t delete_c(book_t b,contact_t c){
-    // TODO : Fill in empty spaces
+    int index;
     for(int i = 0; i < b.size ; i++){
         if(c.id == b.contacts[i].id){
-            empty_c(b.contacts[c.id]);
+            index = i;
+            empty_c(b.contacts[i]);
             b.size--;           
         }
     }
+    if(index < b.size){
+        for(int i = index ; i < b.size ; i++){
+            contact_t temp_c = b.contacts[i];
+            b.contacts[i-1] = temp_c;
+        }
+    } // move everything right to one element backwards - no empty spaces
     return b;
 }
 
-book_t edit_c(book_t b,contact_t c,int s,char v[]){
+book_t edit_c(book_t b,contact_t c){
       for(int i = 0; i < b.size ; i++){
         if(c.id == b.contacts[i].id){
-            switch (s) {
-            case 0:
-                strcpy(b.contacts[c.id].name.firstname,v);
-                break;
-            case 1:
-                /* code */
-                break;
-            case 2:
-                /* code */
-                break;
-            case 3:
-                /* code */
-                break;
-            case 4:
-                /* code */
-                break;
-            case 5:
-                /* code */
-                break;
-            case 6:
-                /* code */
-                break;
-
-            default:
-                break;
-            }
-                       
+            b.contacts[i] = c;
         }
     }
+    return b;
 }

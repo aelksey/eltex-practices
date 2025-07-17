@@ -11,4 +11,6 @@ typedef struct socials socials_t;
 
 void empty_c(contact_t c);
 
+contact_t init_c(int id, ...);
+
 #endif

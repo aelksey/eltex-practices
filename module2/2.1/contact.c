@@ -1,8 +1,10 @@
 #include "contact.h"
 
 #include <string.h>
+#include <stdarg.h>
 
 #define BUFFER 20
+#define FIELDS 6
 
 typedef struct contact {
     int id;
@@ -36,6 +38,25 @@ contact_t empty_c(contact_t c){
     memset(c.socials.tg,0,sizeof(c.socials.tg));
     memset(c.socials.ig,0,sizeof(c.socials.ig));
     memset(c.socials.vk,0,sizeof(c.socials.vk));
+    return c;
+}
+
+contact_t init_c(int id,int count, ...){
+    va_list args;
+    va_start(args,count);
+    char params[FIELDS][BUFFER];
+    for (int i = 0; i < count; i++ ) strcpy(params[i],va_arg(args,const char*)); 
+    va_end(args);
+
+    contact_t c;
+    c.id = id;
+    strcpy(c.name.firstname,params[0]);
+    strcpy(c.name.lastname,params[1]);
+    strcpy(c.job.workplace,params[0]);
+    strcpy(c.job.role,params[1]);
+    strcpy(c.socials.tg,params[0]);
+    strcpy(c.socials.ig,params[1]);
+    strcpy(c.socials.vk,params[0]);
     return c;
 }
 
