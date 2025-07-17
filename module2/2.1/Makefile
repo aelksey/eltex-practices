@@ -13,15 +13,11 @@ TEST_CC_FLAGS:= -lcunit -o
 TEST_EXEC:= test 
 
 
-# Install gtest on
+# Install Cunit on linux
 
-# Linux: sudo apt install libgtest-dev
+# sudo apt install libcunit1 libcunit1-doc libcunit1-dev 
+# dpkg -l | grep -i cunit
 
-# Windows: https://gist.github.com/motchy869/22d873415722a1c10bc77d3f761339dc
-
-# app: gcc contact.c book.c main.c -o app
-
-# tests: test.c -o test 
 
 all: app run
 
