@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "contact.h": "c"
+        "contact.h": "c",
+        "cunit.h": "c",
+        "basic.h": "c"
     }
 }
