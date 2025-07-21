@@ -10,6 +10,8 @@ int del(int a, int b){
     if(b == 0){
         printf("Error: Division by zero(%d/%d)",a,b);
         result = 0;
+    }else{
+        result = a / b;
     }
     return result;
 }
