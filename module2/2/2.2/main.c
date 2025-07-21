@@ -1,16 +1,19 @@
 #include "math.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#define size 3
 
 // TODO: REDO input using getline and sscanf
 
 int main(){
+    int size = 3;
     char op;
     int a,b;
     op = getchar();
-    in_str = (char *) malloc (size);
-    str = getline (&string, &size, stdin);
+    char *in_str = (char *) malloc (size);
+    char *str = getline (&in_str, &size, stdin);
     sscanf(str,"%d %d",&a,&b);
     printf("Basic calculator\n");
     printf("Controls: q(uit) (+,-,/,*,m ) - operation op1 op2\n");
