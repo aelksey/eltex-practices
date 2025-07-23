@@ -40,9 +40,7 @@ char* parse_action(char *src){
 }
 
 void print_mode(mode_t mode){
-    printf("Octal: %o ",mode & 0777);
-
-    printf("Human readable: ");
+    printf("%o ",mode & 0777);
     printf((mode & S_IRUSR) ? "r" : "-");
     printf((mode & S_IWUSR) ? "w" : "-");
     printf((mode & S_IXUSR) ? "x" : "-");
@@ -57,7 +55,8 @@ void print_mode(mode_t mode){
 
 mode_t update_mode(mode_t current_mode,char *target,char *operation,char *action){
 
-    printf("target=%s operation=%s action=%s ",target,operation,action);
+    //printf("target=%s operation=%s action=%s ",target,operation,action);
+
     /*
     
     Algorhitm:
@@ -87,55 +86,55 @@ mode_t update_mode(mode_t current_mode,char *target,char *operation,char *action
 
     // Logic : Action
 
-    if(strcmp(action,"r")){
+    if(strcmp(action,"r") == 0){
         action_mask = READ_MASK;
         target_and_action_mask = target_mask & action_mask;
     }
 
-    if(strcmp(action,"w")){
+    if(strcmp(action,"w") == 0){
         action_mask = WRITE_MASK;
         target_and_action_mask = target_mask & action_mask;
     }
 
-    if(strcmp(action,"x")){
+    if(strcmp(action,"x") == 0){
         action_mask = EXECUTE_MASK;
         target_and_action_mask = target_mask & action_mask;
     }
 
-    if(strcmp(action,"rw")){
-        action_mask |= (READ_MASK | WRITE_MASK);
+    if(strcmp(action,"rw") == 0){
+        action_mask = (READ_MASK | WRITE_MASK);
         target_and_action_mask = target_mask & action_mask;
     }
     
-    if(strcmp(action,"wx")){
-        action_mask |= (WRITE_MASK | EXECUTE_MASK);
+    if(strcmp(action,"wx") == 0){
+        action_mask = (WRITE_MASK | EXECUTE_MASK);
         target_and_action_mask = target_mask & action_mask;
     }
     
-    if(strcmp(action,"rx")){
-        action_mask |= (READ_MASK | EXECUTE_MASK);
+    if(strcmp(action,"rx") == 0){
+        action_mask = (READ_MASK | EXECUTE_MASK);
         target_and_action_mask = target_mask & action_mask;
     }
     
-    if(strcmp(action,"rwx")){
-        action_mask |= (READ_MASK | WRITE_MASK | EXECUTE_MASK);
+    if(strcmp(action,"rwx") == 0){
+        action_mask = (READ_MASK | WRITE_MASK | EXECUTE_MASK);
         target_and_action_mask = target_mask & action_mask;
     }
 
     // Logic : Operation
 
-    if(strcmp(operation,"+")){
-        operation_mask |= target_and_action_mask;
+    if(strcmp(operation,"+") == 0){
+        operation_mask = target_and_action_mask;
         mask |= operation_mask;
     }
 
-    if(strcmp(operation,"-")){
+    if(strcmp(operation,"-") == 0){
         operation_mask = target_and_action_mask;
-        mask |= ~operation_mask;
+        mask &= ~operation_mask;
     }
 
-    if(strcmp(operation,"=")){
-        operation_mask |= target_and_action_mask;
+    if(strcmp(operation,"=") == 0){
+        operation_mask = target_and_action_mask;
         mask = operation_mask;
     }
 
@@ -168,5 +167,6 @@ int main(int argc,char *argv[]){
         free(operation);
     }
     print_mode(mode);
+    
     chmod(file,mode);
 }
