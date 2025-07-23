@@ -1,10 +1,10 @@
 #ifndef MATH_H_
 #define MATH_H_
 
-int sum(int a, int b);
-int sub(int a, int b);
-int del(int a, int b);
-int mul(int a, int b);
-int mod(int a, int b);
+double sum(double a, double b);
+double sub(double a, double b);
+double del(double a, double b);
+double mul(double a, double b);
+double mod(double a, double b);
 
 #endif

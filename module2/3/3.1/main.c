@@ -32,6 +32,10 @@ char* parse_operation(char *src){
     return operation;
 }
 
+// TODO: Add a guard to check for only one flag to escape (-+=) combination
+
+//int parse_check_(char *str)
+
 char* parse_action(char *src){
     char *action;
     action = strdup(src);
@@ -54,11 +58,9 @@ void print_mode(mode_t mode){
     printf("\n");
 }
 
-mode_t update_mode_numeric(long perms){
-
-}
-
 mode_t update_mode(mode_t current_mode,char *target,char *operation,char *action){
+
+    // TODO : Add guard to protect against multiple files
 
     //printf("target=%s operation=%s action=%s ",target,operation,action);
 
@@ -157,9 +159,9 @@ int main(int argc,char *argv[]){
 
     // Numeric mode
     if(argc > 2){
-        printf("Numeric input:%li",strtol(argv[1],&endptr,10));
-        mode = update_mode_numeric(strtol(argv[1],&endptr,10));
-        //mode = 
+        printf("Numeric input:%li ",strtol(argv[1],&endptr,10));
+        // TODO: Write custom parse to convert octal
+        mode = strtol(argv[1],&endptr,10);
     } 
 
     if(endptr == argv[1]){

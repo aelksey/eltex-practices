@@ -1,14 +1,14 @@
 #include "math.h"
 #include <stdio.h>
 
-int sum(int a, int b){return a+b;}
+double sum(double a, double b){return a+b;}
 
-int sub(int a, int b){return a-b;}
+double sub(double a, double b){return a-b;}
 
-int del(int a, int b){
-    int result;
+double del(double a, double b){
+    double result;
     if(b == 0){
-        printf("Error: Division by zero(%d/%d)",a,b);
+        printf("Error: Division by zero(%.2lf/%.2lf)",a,b);
         result = 0;
     }else{
         result = a / b;
@@ -16,6 +16,9 @@ int del(int a, int b){
     return result;
 }
 
-int mul(int a,int b){return a * b;}
+double mul(double a,double b){return a * b;}
 
-int mod(int a, int b){return a % b;}
+double mod(double a, double b){
+    int result = (int)a % (int)b;
+    return (double)result;
+}
