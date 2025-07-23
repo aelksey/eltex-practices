@@ -14,6 +14,7 @@
 #define WRITE_MASK S_IWUSR | S_IWGRP | S_IWOTH
 #define EXECUTE_MASK S_IXUSR | S_IXGRP | S_IXOTH
 
+// TODO : Fix numeric mode
 
 char* parse_target(char *src){
     char *target;
@@ -51,6 +52,10 @@ void print_mode(mode_t mode){
     printf((mode & S_IWOTH) ? "w" : "-");
     printf((mode & S_IXOTH) ? "x" : "-");
     printf("\n");
+}
+
+mode_t update_mode_numeric(long perms){
+
 }
 
 mode_t update_mode(mode_t current_mode,char *target,char *operation,char *action){
@@ -151,7 +156,11 @@ int main(int argc,char *argv[]){
     char* endptr;
 
     // Numeric mode
-    if(argc > 2) mode = strtol(argv[1],&endptr,10);
+    if(argc > 2){
+        printf("Numeric input:%li",strtol(argv[1],&endptr,10));
+        mode = update_mode_numeric(strtol(argv[1],&endptr,10));
+        //mode = 
+    } 
 
     if(endptr == argv[1]){
         // Relative mode
