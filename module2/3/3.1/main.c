@@ -32,9 +32,26 @@ char* parse_operation(char *src){
     return operation;
 }
 
-// TODO: Add a guard to check for only one flag to escape (-+=) combination
+// TODO : Add service dectooctal
 
-//int parse_check_(char *str)
+int dectooctal(int n){
+
+    int octalNum = 0, countval = 1;
+    int dNo = n;
+
+    while (n != 0) {
+        // decimals remainder is calculated
+        int remainder = n % 8;
+
+        // storing the octalvalue
+        octalNum += remainder * countval;
+
+        // storing exponential value
+        countval = countval * 10;
+        n /= 8;
+    }
+    return octalNum;
+}
 
 char* parse_action(char *src){
     char *action;
@@ -161,7 +178,7 @@ int main(int argc,char *argv[]){
     if(argc > 2){
         printf("Numeric input:%li ",strtol(argv[1],&endptr,10));
         // TODO: Write custom parse to convert octal
-        mode = strtol(argv[1],&endptr,10);
+        mode = dectooctal(strtol(argv[1],&endptr,10));
     } 
 
     if(endptr == argv[1]){
