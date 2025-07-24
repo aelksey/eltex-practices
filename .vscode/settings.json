@@ -2,6 +2,7 @@
     "files.associations": {
         "contact.h": "c",
         "cunit.h": "c",
-        "basic.h": "c"
+        "basic.h": "c",
+        "string.h": "c"
     }
 }

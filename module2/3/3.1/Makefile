@@ -1,5 +1,5 @@
 CC:=gcc
-CC_FLAGS:= -g -o
+CC_FLAGS:= -o
 SRC:=main.c
 EXEC:=chmod
 
