@@ -4,15 +4,18 @@
 #include <stdlib.h>
 #include "display.h"
 #include "prompt.h"
+#include "contact.h"
 
 list_t list;
 
 int main(){
     char action;
     printf("Contact Book App : Double Linked List\n");
-    printf("Controls : a(dd) e(dit) r(emove) v(iew)\n");
+    printf("Controls : a(dd) e(dit) r(emove) v(iew) s(ort) q(uit)\n");
     while (1){
+        printf("?:");
         action = getchar();
+        if(action == 'q')break;
         menu_operation(action);
     }
     
@@ -20,29 +23,28 @@ int main(){
 }
 
 void menu_operation(char action){
-    if(action == "a" || action == "A") menu_add();
-    if(action == "e" || action == "E") menu_edit();
-    if(action == "r" || action == "R") menu_rm();
-    if(action == "v" || action == "V") display_list(&list); 
+    if(action == 'a' || action == 'A') menu_add();
+    if(action == 'e' || action == 'E') menu_edit();
+    if(action == 'r' || action == 'R') menu_rm();
+    if(action == 's' || action == 's') menu_sort();
+    if(action == 'v' || action == 'V') display_list(&list);
 }
-
 
 void menu_add(){
     char action;
     int pos;
     
     printf("Add operation options:\n");
-    printf("1.Add first\n");
-    printf("2.Add last\n");
-    printf("3.Add pos\n");
+    printf("1.Add first 2.Add last 3.Add pos : ");
     
     action = getchar();
+    scanf("%c",&action);
 
-    if(action == "1") add_first(&list,prompt_create_c());
+    if(action == '1') add_first(&list,prompt_create_c());
     
-    if(action == "2") add_last(&list,prompt_create_c());
+    if(action == '2') add_last(&list,prompt_create_c());
 
-    if(action == "3"){
+    if(action == '3'){
         printf("pos=");
         scanf("%d",&pos);
         add_at(&list,prompt_create_c(),pos);
@@ -54,17 +56,16 @@ void menu_edit(){
     int pos;
     
     printf("Edit operation options:\n");
-    printf("1.Edit first\n");
-    printf("2.Edit last\n");
-    printf("3.Edit pos\n");
+    printf("1.Edit first 2.Edit last 3.Edit pos : ");
     
     action = getchar();
+    scanf("%c",&action);
 
-    if(action == "1") prompt_edit_c(get_first(&list));
+    if(action == '1') prompt_edit_c(get_first(&list));
     
-    if(action == "2") prompt_edit_c(get_last(&list));
+    if(action == '2') prompt_edit_c(get_last(&list));
 
-    if(action == "3"){
+    if(action == '3'){
         printf("pos=");
         scanf("%d",&pos);
         prompt_edit_c(get_at(&list,pos));
@@ -76,29 +77,41 @@ void menu_rm(){
     int pos;
     
     printf("Remove operation options:\n");
-    printf("1.Remove first\n");
-    printf("2.Remove last\n");
-    printf("3.Remove pos\n");
-    
-    action = getchar();
+    printf("1.Remove first 2.Remove last 3.Remove pos : ");
 
-    if(action == "1"){
+    action = getchar();
+    scanf("%c",&action);
+
+    if(action == '1'){
         if(prompt_remove_c(get_first(&list))){
             delete_first(&list);
         }
     }
     
-    if(action == "2"){
+    if(action == '2'){
         if(prompt_remove_c(get_last(&list))){
             delete_last(&list);
         }
     }
 
-    if(action == "3"){
+    if(action == '3'){
         printf("pos=");
         scanf("%d",&pos);
         if(prompt_remove_c(get_at(&list,pos))){
             delete_at(&list,pos);
         }
     }
+}
+
+void menu_sort(){
+    char action;
+    printf("Sort operation options:\n");
+    printf("1.Sort by name 2.Sort by surname 3.Sort by workplace 4.Sort by role 5.Sort by e-mail : ");
+    action = getchar();
+    scanf("%c",&action);
+    if(action == '1')sort_list(&list,compare_by_name);
+    if(action == '2')sort_list(&list,compare_by_surname);
+    if(action == '3')sort_list(&list,compare_by_workplace);
+    if(action == '4')sort_list(&list,compare_by_role);
+    if(action == '5')sort_list(&list,compare_by_email);
 }

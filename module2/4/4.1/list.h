@@ -32,8 +32,8 @@ void sort_list(list_t *list, int (*compare)(const contact_t *, const contact_t *
 
 // Helper functions
 
-static node_t *merge_sorted_lists(node_t *a, node_t *b, int (*compare)(const contact_t *, const contact_t *));
-static void merge_sort(node_t **head_ref, int (*compare)(const contact_t *, const contact_t *));
-static void split_list(node_t *source, node_t **front_ref, node_t **back_ref);
+node_t *merge_sorted_lists(node_t *a, node_t *b, int (*compare)(const contact_t *, const contact_t *));
+void merge_sort(node_t **head_ref, int (*compare)(const contact_t *, const contact_t *));
+void split_list(node_t *source, node_t **front_ref, node_t **back_ref);
 
 #endif

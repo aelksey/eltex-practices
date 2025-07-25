@@ -1,8 +1,10 @@
 #include "contact.h"
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
-static char *copy_string(const char *src) {
+char *copy_string(const char *src) {
     if (src == NULL) return NULL;
     char *dst = strdup(src);
     if (!dst) {
@@ -12,7 +14,7 @@ static char *copy_string(const char *src) {
     return dst;
 }
 
-static contact_t *create_contact(int id, const char *name, const char *surname, const char *workplace, const char *role, const char *email) {
+contact_t *create_contact(int id, const char *name, const char *surname, const char *workplace, const char *role, const char *email) {
     
     contact_t *contact = (contact_t *)malloc(sizeof(contact_t));
     if (!contact) {
@@ -30,7 +32,7 @@ static contact_t *create_contact(int id, const char *name, const char *surname, 
     return contact;
 }
 
-static void free_contact(contact_t *contact) {
+void free_contact(contact_t *contact) {
     free(contact->name.name);
     free(contact->name.surname);
     free(contact->job.workplace);
@@ -41,10 +43,12 @@ static void free_contact(contact_t *contact) {
 
 int compare_by_id(const contact_t *a, const contact_t *b) {return a->id - b->id;}
 
-int compare_by_name(const contact_t *a, const contact_t *b) {
-    int surname_cmp = strcmp(a->name.surname, b->name.surname);
-    if (surname_cmp != 0) return surname_cmp;
-    return strcmp(a->name.name, b->name.name);
-}
+int compare_by_name(const contact_t *a, const contact_t *b) {return strcmp(a->name.name, b->name.name);}
+
+int compare_by_surname(const contact_t *a, const contact_t *b) {return strcmp(a->name.surname, b->name.surname);}
 
 int compare_by_workplace(const contact_t *a, const contact_t *b) { return strcmp(a->job.workplace, b->job.workplace);}
+
+int compare_by_role(const contact_t *a, const contact_t *b) { return strcmp(a->job.role, b->job.role);}
+
+int compare_by_email(const contact_t *a, const contact_t *b) { return strcmp(a->email.email, b->email.email);}

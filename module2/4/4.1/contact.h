@@ -22,16 +22,17 @@ typedef struct contact {
     email_t email;
 } contact_t;
 
-static char *copy_string(const char *src);
+char *copy_string(const char *src);
 
-static contact_t *create_contact(int id, const char *name, const char *surname, const char *workplace, const char *role, const char *email);
+contact_t *create_contact(int id, const char *name, const char *surname, const char *workplace, const char *role, const char *email);
 
-static void free_contact(contact_t *contact);
+void free_contact(contact_t *contact);
 
 int compare_by_id(const contact_t *a, const contact_t *b);
-
 int compare_by_name(const contact_t *a, const contact_t *b);
-
+int compare_by_surname(const contact_t *a, const contact_t *b);
 int compare_by_workplace(const contact_t *a, const contact_t *b);
+int compare_by_role(const contact_t *a, const contact_t *b);
+int compare_by_email(const contact_t *a, const contact_t *b);
 
 #endif

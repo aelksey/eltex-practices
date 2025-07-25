@@ -5,7 +5,6 @@ EXEC:= bookappv2
 
 # Test section
 
-TEST_OBJ_FLAGS:= -c -o
 TEST_EXEC_FLAGS:= -lcunit -o
 TEST_EXEC:= bookappv2test
 
@@ -28,10 +27,10 @@ run:
 test: build_test run_test
 
 build_test:
-	$(CC) $(SRC1) $(TEST_OBJ_FLAGS) $(OBJ1)
-	$(CC) $(SRC2) $(TEST_OBJ_FLAGS) $(OBJ2)
-	$(CC) $(SRC3) $(TEST_OBJ_FLAGS) $(OBJ3)
-	$(CC) $(OBJ1) $(OBJ2) $(OBJ3) $(TEST_EXEC_FLAGS) $(EXEC) 
+	$(CC) -c $(SRC1) -o $(OBJ1)
+	$(CC) -c $(SRC2) -o $(OBJ2)
+	$(CC) -c $(SRC3) -o $(OBJ3)
+	$(CC) $(OBJ1) $(OBJ2) $(OBJ3) $(TEST_EXEC_FLAGS) $(TEST_EXEC) 
 
 run_test:
 	./$(TEST_EXEC)

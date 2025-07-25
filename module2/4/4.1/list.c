@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "list.h"
+#include "contact.h"
 
 // Implementation
 void init_list(list_t *list) {
@@ -210,7 +211,7 @@ void sort_list(list_t *list, int (*compare)(const contact_t *, const contact_t *
     list->tail = current;
 }
 
-static void merge_sort(node_t **head_ref, int (*compare)(const contact_t *, const contact_t *)) {
+void merge_sort(node_t **head_ref, int (*compare)(const contact_t *, const contact_t *)) {
     node_t *head = *head_ref;
     node_t *a;
     node_t *b;
@@ -228,7 +229,7 @@ static void merge_sort(node_t **head_ref, int (*compare)(const contact_t *, cons
     }
 }
 
-static node_t *merge_sorted_lists(node_t *a, node_t *b, int (*compare)(const contact_t *, const contact_t *)) {
+node_t *merge_sorted_lists(node_t *a, node_t *b, int (*compare)(const contact_t *, const contact_t *)) {
     node_t *result = NULL;
     
     if (a == NULL) return b;
@@ -250,7 +251,7 @@ static node_t *merge_sorted_lists(node_t *a, node_t *b, int (*compare)(const con
     return result;
 }
 
-static void split_list(node_t *source, node_t **front_ref, node_t **back_ref) {
+void split_list(node_t *source, node_t **front_ref, node_t **back_ref) {
     node_t *fast = source->next;
     node_t *slow = source;
     

@@ -1,8 +1,9 @@
 #include "display.h"
 #include "stddef.h"
+#include <stdio.h>
 
 void display_contact(contact_t *contact){
-    printf("  ID: %d, Name: %s %s, Workplace: %s, Role: %s, Email: %s\n",
+    printf("ID: %d Name: %s Surname: %s Workplace: %s Role: %s Email: %s\n",
                contact->id,
                contact->name.name,
                contact->name.surname,

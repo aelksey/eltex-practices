@@ -1,5 +1,6 @@
 #include <CUnit/Basic.h>
 #include "list.h"
+#include "contact.h"
 
 // Test cases
 void test_init_list(void) {

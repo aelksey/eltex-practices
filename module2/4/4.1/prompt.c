@@ -5,6 +5,8 @@
 
 #define BUFFER 50
 
+size_t size = BUFFER * sizeof(char);
+
 int id_count = 0;
 
 contact_t *prompt_create_c(){
@@ -12,16 +14,24 @@ contact_t *prompt_create_c(){
     id_count++;
     char name[BUFFER], surname[BUFFER], workplace[BUFFER], role[BUFFER], email[BUFFER];
     printf("Create contact prompt:\n");
+
+    fgets(name, BUFFER, stdin);
+    
     printf("Name:");
-    scanf("%s",name);
+    fgets(name, BUFFER, stdin);
+
     printf("Lastname:");
-    scanf("%s",surname);
+    fgets(surname, BUFFER, stdin);
+
     printf("Workplace:");
-    scanf("%s",workplace);
+    fgets(workplace, BUFFER, stdin);
+    
     printf("Role:");
-    scanf("%s",role);
+    fgets(role, BUFFER, stdin);
+    
     printf("E-mail:");
-    scanf("%s",email);
+    fgets(email, BUFFER, stdin);
+
     return create_contact(id,name,surname,workplace,role,email);
 }
 
@@ -30,36 +40,39 @@ void prompt_edit_c(contact_t *c){
     char name[BUFFER], surname[BUFFER], workplace[BUFFER], role[BUFFER], email[BUFFER];
     printf("Edit contact prompt:\n");
 
+    fgets(name, BUFFER, stdin);
+
     printf("Name: %s :",c->name.name);
-    scanf("%s",name);
+    fgets(name, BUFFER, stdin);
     if(strcmp(name,"") != 0)c->name.name = strdup(name);
 
     printf("Surname: %s :",c->name.surname);
-    scanf("%s",surname);
+    fgets(surname, BUFFER, stdin);
     if(strcmp(surname,"") != 0)c->name.surname = strdup(surname);
 
     printf("Workplace: %s :",c->job.workplace);
-    scanf("%s",workplace);
+    fgets(workplace, BUFFER, stdin);
     if(strcmp(workplace,"") != 0)c->job.workplace = strdup(workplace);
 
     printf("Role: %s :",c->job.role);
-    scanf("%s",role);
+    fgets(role, BUFFER, stdin);
     if(strcmp(role,"") != 0)c->job.role = strdup(role);
 
     printf("E-mail: %s :",c->email.email);
-    scanf("%s",email);
+    fgets(email, BUFFER, stdin);
     if(strcmp(email,"") != 0)c->email.email = strdup(email);
 
 }
 
 int prompt_remove_c(contact_t *c){
     int status = 0;
-    char c;
+    char s;
     printf("Remove contact:\n");
     display_contact(c);
     printf("y/n?");
-    scanf("%c",&c);
-    if(c == "Y" || c == "y") status = 1;
+    getchar();
+    s = getchar();
+    if(s == 'Y' || s == 'y') status = 1;
     return status; 
 }
 
