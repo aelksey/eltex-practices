@@ -3,6 +3,8 @@
         "contact.h": "c",
         "cunit.h": "c",
         "basic.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "stddef.h": "c",
+        "stdio.h": "c"
     }
 }

@@ -1,15 +1,7 @@
 #ifndef CONTACT_H_
 #define CONTACT_H_
 
-// Comparator keys
-
-#define NAME      0
-#define SURNAME   1
-#define WORKPLACE 2
-#define ROLE      3
-#define EMAIL     4
-
-typedef struct name {   
+typedef struct name {
     char *name;
     char *surname;
 } name_t;
@@ -19,9 +11,9 @@ typedef struct job {
     char *role;
 } job_t;
 
-typedef struct email{
+typedef struct email {
     char *email;
-}email_t;
+} email_t;
 
 typedef struct contact {
     int id;
@@ -30,12 +22,16 @@ typedef struct contact {
     email_t email;
 } contact_t;
 
-void empty_c(contact_t *c);
+static char *copy_string(const char *src);
 
-void init_c(contact_t *c,int id,char *name,char *surname,char *workplace,char *role,char *email);
+static contact_t *create_contact(int id, const char *name, const char *surname, const char *workplace, const char *role, const char *email);
 
-// MAN : Custom comparator function
-// MAN : Return values : 0(objects are equal) 1(a > b) -1 (b > a)
-int cmp_c(contact_t *c1,contact_t *c2,int key); 
+static void free_contact(contact_t *contact);
+
+int compare_by_id(const contact_t *a, const contact_t *b);
+
+int compare_by_name(const contact_t *a, const contact_t *b);
+
+int compare_by_workplace(const contact_t *a, const contact_t *b);
 
 #endif

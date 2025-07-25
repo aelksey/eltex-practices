@@ -1,41 +1,50 @@
 #include "contact.h"
-#include <string.h>
+#include <stddef.h>
+#include <stdlib.h>
 
-void empty_c(contact_t *c){
-    c->id = NULL;
-    c->name.name = strdup("");
-    c->name.surname = strdup("");
-    c->job.workplace = strdup("");
-    c->job.role = strdup("");
-    c->email.email = strdup("");
-    free(c->name.name);
-    free(c->name.surname);
-    free(c->job.workplace);
-    free(c->job.role);
-    free(c->email.email);
+static char *copy_string(const char *src) {
+    if (src == NULL) return NULL;
+    char *dst = strdup(src);
+    if (!dst) {
+        perror("Memory allocation failed");
+        exit(EXIT_FAILURE);
+    }
+    return dst;
 }
 
-void init_c(contact_t *c,int id,char *name,char *surname,char *workplace,char *role,char *email){
-    c->id = id;
-    c->name.name = strdup(name);
-    c->name.surname = strdup(surname);
-    c->job.workplace = strdup(workplace);
-    c->job.role = strdup(role);
-    c->email.email = strdup(email);
-}
-
-// MAN : Custom comparator function
-
-// MAN : Return values : 0(objects are equal) 1(a > b) -1 (b > a) - just like strcmp()
-
-int cmp_c(contact_t *c1,contact_t *c2,int key){
-    int result = 0;
-
-    if(key == NAME) result = strcmp(c1->name.name,c2->name.name);
-    if(key == SURNAME) result = strcmp(c1->name.surname,c2->name.surname);
-    if(key == WORKPLACE) result = strcmp(c1->job.workplace,c2->job.workplace);
-    if(key == ROLE) result = strcmp(c1->job.role,c2->job.role);
-    if(key == EMAIL) result = strcmp(c1->email.email,c2->email.email);
+static contact_t *create_contact(int id, const char *name, const char *surname, const char *workplace, const char *role, const char *email) {
     
-    return result;
-} 
+    contact_t *contact = (contact_t *)malloc(sizeof(contact_t));
+    if (!contact) {
+        perror("Memory allocation failed");
+        exit(EXIT_FAILURE);
+    }
+    
+    contact->id = id;
+    contact->name.name = copy_string(name);
+    contact->name.surname = copy_string(surname);
+    contact->job.workplace = copy_string(workplace);
+    contact->job.role = copy_string(role);
+    contact->email.email = copy_string(email);
+    
+    return contact;
+}
+
+static void free_contact(contact_t *contact) {
+    free(contact->name.name);
+    free(contact->name.surname);
+    free(contact->job.workplace);
+    free(contact->job.role);
+    free(contact->email.email);
+    free(contact);
+}
+
+int compare_by_id(const contact_t *a, const contact_t *b) {return a->id - b->id;}
+
+int compare_by_name(const contact_t *a, const contact_t *b) {
+    int surname_cmp = strcmp(a->name.surname, b->name.surname);
+    if (surname_cmp != 0) return surname_cmp;
+    return strcmp(a->name.name, b->name.name);
+}
+
+int compare_by_workplace(const contact_t *a, const contact_t *b) { return strcmp(a->job.workplace, b->job.workplace);}
