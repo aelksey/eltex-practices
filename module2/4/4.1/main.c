@@ -6,6 +6,12 @@
 #include "prompt.h"
 #include "contact.h"
 
+void menu_add(void);
+void menu_edit(void);
+void menu_rm(void);
+void menu_sort(void);
+void menu_operation(char);
+    
 list_t list;
 
 int main(){
