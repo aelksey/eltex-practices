@@ -53,8 +53,6 @@ build_test:
 	$(CC) $(OBJ3) $(TEST_EXEC_FLAGS) $(TEST_EXEC) 
 
 build_lib:
-	$(CMD)
-	$(CMD2)
 	$(LIB_CC) $(OBJ) $(LIB_FLAGS) $(LIB)
 
 copy_lib:
