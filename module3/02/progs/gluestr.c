@@ -1,0 +1,1 @@
+// Strcat analogue

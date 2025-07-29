@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <string.h>
 
 
 #define STRING 0
@@ -13,6 +14,8 @@
 int arg_type(const char *arg);
 
 void handle_arg(int proc_selector ,const char *arg);
+
+int is_double(const char *arg);
 
 int main(int argc,char *argv[]) {
     
@@ -25,24 +28,35 @@ int main(int argc,char *argv[]) {
         // Change proc selector to parent process
         if(proc_selector == 1)proc_selector = 0;
     }
+    printf("\n");
 
     return 0;
 }
 
+int is_double(const char *arg){
+    int result = 0;
+    for(int i = 0;i < strlen(arg); i++){
+        if(arg[i] == '.' || arg[i] == '.'){
+            result = 1;
+            break;
+        }
+    }
+    return result;
+}
+
 int arg_type(const char *arg){
     int type = STRING;
-    char *endptr;
-    if(atoi(arg) != 0)type = INTEGER;
-    if(atof(arg) != 0)type = DOUBLE; 
+    if(atoi(arg) != 0)type = INTEGER;    
+    if(is_double(arg) != 0)type = DOUBLE; 
     return type;
 }
 
 void handle_arg(int proc_selector ,const char *arg){
     if(proc_selector == 0){
         char *endptr;
-        if (arg_type(arg) == STRING)printf(" %s ",arg);
-        if (arg_type(arg) == INTEGER)printf(" %d %d ",atoi(arg),atoi(arg)*2);
-        if (arg_type(arg) == DOUBLE)printf(" %.2lf %.2lf ",strtod(arg,&endptr),strtod(arg,&endptr)*2);
+        if (arg_type(arg) == STRING)printf("%s ",arg);
+        if (arg_type(arg) == INTEGER)printf("%d %d ",atoi(arg),atoi(arg)*2);
+        if (arg_type(arg) == DOUBLE)printf("%.2lf %.2lf ",strtod(arg,&endptr),strtod(arg,&endptr)*2);
     }
 
     if(proc_selector == 1){
