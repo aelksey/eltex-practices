@@ -70,7 +70,6 @@ void handle_command(char *input) {
         
         argv[argc] = strdup(token);  // strdup allocates and copies - no need for strcpy after
 
-        //fprintf(stdout, "argc= %d token=%s argv[%d]=%s \n", argc, token, argc, argv[argc]);
 
         if (argv[argc] == NULL) {
             perror("strdup failed");
@@ -84,11 +83,6 @@ void handle_command(char *input) {
         argc++;
     }
 
-    //argv[argc] = NULL; // Null-terminate the argv array
-
-    //fprintf(stderr,"argv[0]= %s ",argv[0]);
-    //fprintf(stderr,"argv[1]= %s ",argv[1]);
-    //fprintf(stderr,"argv[2]= %s ",argv[2]);
 
     pid_t command_process = fork();
     if (command_process < 0) {
