@@ -7,6 +7,9 @@
         "stddef.h": "c",
         "stdio.h": "c",
         "time.h": "c",
-        "wait.h": "c"
+        "wait.h": "c",
+        "types.h": "c",
+        "unistd.h": "c",
+        "file.h": "c"
     }
 }
