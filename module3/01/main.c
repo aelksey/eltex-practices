@@ -66,7 +66,7 @@ void handle_arg(int proc_selector ,const char *arg){
     
     if(proc_selector == 1){
         pid_t pid = fork();
-        if(pid == 0){_exit(EXIT_SUCCESS);}
+        if(pid == 0){arg_action(arg);_exit(EXIT_SUCCESS);}
         if(pid == -1){perror("fork failed");_exit(EXIT_FAILURE);}
     }
 
