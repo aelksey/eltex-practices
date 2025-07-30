@@ -94,8 +94,8 @@ void handle_command(char *input) {
     }
     if (command_process == 0) {
         // Child process
-        execvp(argv[0], argv);
-        perror("execvp failed");
+        if(execvp(argv[0], argv) == -1) perror("execvp failed");
+        
         _exit(EXIT_FAILURE);  // Use _exit in child after fork to avoid flushing buffers
     } else {
         for (int i = 0; i < argc; i++) free(argv[i]);

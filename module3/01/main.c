@@ -13,6 +13,8 @@
 
 int arg_type(const char *arg);
 
+void arg_action(const char *arg);
+
 void handle_arg(int proc_selector ,const char *arg);
 
 int is_double(const char *arg);
@@ -51,23 +53,21 @@ int arg_type(const char *arg){
     return type;
 }
 
-void handle_arg(int proc_selector ,const char *arg){
-    if(proc_selector == 0){
-        char *endptr;
+void arg_action(const char *arg){
+    char *endptr;
         if (arg_type(arg) == STRING)printf("%s ",arg);
         if (arg_type(arg) == INTEGER)printf("%d %d ",atoi(arg),atoi(arg)*2);
         if (arg_type(arg) == DOUBLE)printf("%.2lf %.2lf ",strtod(arg,&endptr),strtod(arg,&endptr)*2);
-    }
-
-    if(proc_selector == 1){
-        pid_t pid = fork();
-        if(pid == 0){
-            char *endptr;
-            if (arg_type(arg) == STRING)printf(" %s ",arg);
-            if (arg_type(arg) == INTEGER)printf(" %d %d ",atoi(arg),atoi(arg)*2);
-            if (arg_type(arg) == DOUBLE)printf(" %.2lf %.2lf ",strtod(arg,&endptr),strtod(arg,&endptr)*2);
-            _exit(EXIT_SUCCESS);
-        }
-    }
 }
 
+void handle_arg(int proc_selector ,const char *arg){
+    
+    if(proc_selector == 0)arg_action(arg);
+    
+    if(proc_selector == 1){
+        pid_t pid = fork();
+        if(pid == 0){_exit(EXIT_SUCCESS);}
+        if(pid == -1){perror("fork failed");_exit(EXIT_FAILURE);}
+    }
+
+}
