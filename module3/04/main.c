@@ -3,32 +3,42 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+#include <fcntl.h>
 
-
-#define BUFFSIZE 100
+#define BUFFSIZE 1024
 #define PROMPT ">:"
+#define MAX_COMMANDS 10
 
 char *get_user_input(void);
-
-void exit_handler(char *input);
-
+int should_exit(char *input);
 void handle_command(char *input);
+void cleanup_commands(char **commands, int count);
 
 int main() {
-    char *input = malloc(BUFFSIZE);
-    printf("si - simple interepreter: )\n");
+    printf("si - simple interpreter\n");
     while (1) {
         printf(PROMPT);
-        strcpy(input,get_user_input());
-        exit_handler(input);
+        fflush(stdout);
+        
+        char *input = get_user_input();
+        if (input == NULL) continue;
+        
+        if (should_exit(input)) {
+            free(input);
+            break;
+        }
+        
         handle_command(input);
+        free(input);
     }
-    free(input);
+    return EXIT_SUCCESS;
 }
 
 char *get_user_input(void) {
     char *input = malloc(BUFFSIZE);
     if (input == NULL) {
+        perror("malloc failed");
         return NULL;
     }
     
@@ -38,68 +48,166 @@ char *get_user_input(void) {
     }
     
     input[strcspn(input, "\n")] = '\0';
-    char *str = strdup(input);
-    free(input);
-    return str;  // Could be NULL if strdup failed
+    return input;
 }
 
-void exit_handler(char *input){
-    if(strcmp(input,"exit") == 0)exit(EXIT_SUCCESS);
-    if(strcmp(input,"Exit") == 0)exit(EXIT_SUCCESS);
-    if(strcmp(input,"e") == 0)exit(EXIT_SUCCESS);
-    if(strcmp(input,"E") == 0)exit(EXIT_SUCCESS);
-    if(strcmp(input,"q") == 0)exit(EXIT_SUCCESS);
+int should_exit(char *input) {
+    return (strcmp(input, "exit") == 0 ||
+           strcmp(input, "Exit") == 0 ||
+           strcmp(input, "e") == 0 ||
+           strcmp(input, "E") == 0 ||
+           strcmp(input, "q") == 0);
+}
+
+void cleanup_commands(char **commands, int count) {
+    for (int i = 0; i < count; i++) {
+        free(commands[i]);
+    }
 }
 
 void handle_command(char *input) {
-    int argc = 0;
-    char **argv;
-    char *token;
+    char *commands[MAX_COMMANDS];
+    int num_commands = 0;
+    char *saveptr;
     
-    // Allocate memory for argv (array of pointers)
-    argv = (char **)malloc(BUFFSIZE * sizeof(char *));
-    if (argv == NULL) {
-        perror("malloc failed");
+    char *input_copy = strdup(input);
+    if (input_copy == NULL) {
+        perror("strdup failed");
         return;
     }
 
-    // First tokenization
-    token = strtok(input, " ");
-
-    while (token != NULL) {
+    // Split by pipes
+    char *token = strtok_r(input_copy, "|", &saveptr);
+    while (token != NULL && num_commands < MAX_COMMANDS) {
+        // Trim whitespace
+        while (*token == ' ') token++;
+        char *end = token + strlen(token) - 1;
+        while (end > token && *end == ' ') end--;
+        *(end + 1) = '\0';
         
-        argv[argc] = strdup(token);  // strdup allocates and copies - no need for strcpy after
-
-
-        if (argv[argc] == NULL) {
+        commands[num_commands] = strdup(token);
+        if (commands[num_commands] == NULL) {
             perror("strdup failed");
-            // Clean up already allocated memory
-            for (int i = 0; i < argc; i++) {
-                free(argv[i]);
+            free(input_copy);
+            cleanup_commands(commands, num_commands);
+            return;
+        }
+        num_commands++;
+        token = strtok_r(NULL, "|", &saveptr);
+    }
+    free(input_copy);
+
+    if (num_commands == 0) {
+        return;
+    }
+
+    int prev_pipe[2] = {-1, -1};
+    pid_t pids[MAX_COMMANDS];
+    int num_pids = 0;
+    int success = 1;  // Flag to track success through pipeline
+
+    for (int i = 0; i < num_commands && success; i++) {
+        int next_pipe[2] = {-1, -1};
+        
+        if (i < num_commands - 1) {
+            if (pipe(next_pipe)) {
+                perror("pipe failed");
+                success = 0;
+                break;
             }
         }
 
-       token = strtok(NULL, " ");
-        argc++;
-    }
+        pids[num_pids] = fork();
+        if (pids[num_pids] < 0) {
+            perror("fork failed");
+            success = 0;
+            if (next_pipe[0] != -1) close(next_pipe[0]);
+            if (next_pipe[1] != -1) close(next_pipe[1]);
+            break;
+        }
 
+        if (pids[num_pids] == 0) {  // Child process
+            // Handle input redirection
+            if (prev_pipe[0] != -1) {
+                dup2(prev_pipe[0], STDIN_FILENO);
+                close(prev_pipe[0]);
+                close(prev_pipe[1]);
+            }
 
-    pid_t command_process = fork();
-    if (command_process < 0) {
-        perror("fork failed");
-        // Clean up
-        for (int i = 0; i < argc; i++) free(argv[i]);
-        free(argv);
-        _exit(EXIT_FAILURE);
-    }
-    if (command_process == 0) {
-        // Child process
-        if(execvp(argv[0], argv) == -1) perror("execvp failed");
+            // Handle output redirection
+            if (next_pipe[1] != -1) {
+                dup2(next_pipe[1], STDOUT_FILENO);
+                close(next_pipe[0]);
+                close(next_pipe[1]);
+            }
+
+            // Parse command and arguments
+            char *argv[BUFFSIZE];
+            int argc = 0;
+            char *saveptr2;
+            char *cmd_copy = strdup(commands[i]);
+            if (cmd_copy == NULL) {
+                perror("strdup failed");
+                _exit(EXIT_FAILURE);
+            }
+
+            token = strtok_r(cmd_copy, " ", &saveptr2);
+            while (token != NULL && argc < BUFFSIZE - 1) {
+                argv[argc++] = token;
+                token = strtok_r(NULL, " ", &saveptr2);
+            }
+            argv[argc] = NULL;
+
+            // Handle I/O redirection within command
+            for (int j = 0; j < argc; j++) {
+                if (strcmp(argv[j], "<") == 0 && j + 1 < argc) {
+                    int fd = open(argv[j+1], O_RDONLY);
+                    if (fd < 0) {
+                        perror("open input file failed");
+                        free(cmd_copy);
+                        _exit(EXIT_FAILURE);
+                    }
+                    dup2(fd, STDIN_FILENO);
+                    close(fd);
+                    argv[j] = NULL;
+                    break;
+                } else if (strcmp(argv[j], ">") == 0 && j + 1 < argc) {
+                    int fd = open(argv[j+1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd < 0) {
+                        perror("open output file failed");
+                        free(cmd_copy);
+                        _exit(EXIT_FAILURE);
+                    }
+                    dup2(fd, STDOUT_FILENO);
+                    close(fd);
+                    argv[j] = NULL;
+                    break;
+                }
+            }
+
+            execvp(argv[0], argv);
+            perror("execvp failed");
+            free(cmd_copy);
+            _exit(EXIT_FAILURE);
+        }
+
+        // Parent process cleanup
+        if (prev_pipe[0] != -1) close(prev_pipe[0]);
+        if (prev_pipe[1] != -1) close(prev_pipe[1]);
         
-        _exit(EXIT_FAILURE);  // Use _exit in child after fork to avoid flushing buffers
-    } else {
-        for (int i = 0; i < argc; i++) free(argv[i]);
-        free(argv);
+        prev_pipe[0] = next_pipe[0];
+        prev_pipe[1] = next_pipe[1];
+        num_pids++;
     }
 
+    // Close any remaining pipe ends
+    if (prev_pipe[0] != -1) close(prev_pipe[0]);
+    if (prev_pipe[1] != -1) close(prev_pipe[1]);
+
+    // Wait for all child processes
+    for (int i = 0; i < num_pids; i++) {
+        waitpid(pids[i], NULL, 0);
+    }
+
+    cleanup_commands(commands, num_commands);
 }
