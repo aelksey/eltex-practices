@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+// TODO : Recommit according to task do not ignore vatious SIGNALS
+
 #define MODE_PROG O_CREAT | O_WRONLY | O_APPEND
 #define MODE_OS S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IRGRP | S_IWGRP
 #define DEFAULT_PATH "data.txt"
@@ -32,11 +34,6 @@ int main(int argc,char *argv[]){
         signal(SIGINT,signal_handler); 
         signal(SIGQUIT,signal_handler);
         // Ignore rest of signals
-        signal(SIGABRT,SIG_IGN);
-        signal(SIGTERM,SIG_IGN);
-        signal(SIGTSTP,SIG_IGN);
-        signal(SIGSTOP,SIG_IGN);
-        signal(SIGCONT,SIG_IGN);
         count++;
         
     }
