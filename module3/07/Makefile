@@ -16,5 +16,5 @@ clean:
 	rm -f $(EXEC)
 
 # example :
-# TERM1 : ./chat /chat1 /chat2
-# TERM2 : ./chat /chat2 /chat1
+# TERM1 : ./chat chat1 chat2
+# TERM2 : ./chat chat2 chat1

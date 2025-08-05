@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     
     if (argc != 3) {
         printf("Usage: %s <my_queue_name> <other_queue_name>\n", argv[0]);
-        printf("Example: %s /chat1 /chat2\n", argv[0]);
+        printf("Example: %s chat1 chat2\n", argv[0]);
         exit(1);
     }
     

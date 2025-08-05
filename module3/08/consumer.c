@@ -13,8 +13,12 @@
 #define TEMP_FILE "temp_file.txt"
 
 void sem_wait(int sem_id) {
-    struct sembuf sb = {0, -1, 0};
-    semop(sem_id, &sb, 1);
+    // TODO : Fix according to presentation about SystemV semaphores
+    struct sembuf lock = {0, -1, 0};
+    struct sembuf unlock[2] = {{0, 0, 0},{0, 1, 0}};
+    // Check if semaphore is locked
+    if(semctl(sem_id,0,GETVAL) == 0)semop(sem_id,unlock,2);
+    semop(sem_id, &lock, 1);
 }
 
 void sem_signal(int sem_id) {

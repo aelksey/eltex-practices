@@ -46,8 +46,8 @@ void* receive_messages(void *arg) {
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        printf("Usage: %s <client_number>\n", argv[0]);
-        printf("Client number should be 2, 3, 4, etc. (will use priorities 20, 30, 40, ...)\n");
+        printf("Usage: %s <client_priority>\n", argv[0]);
+        printf("Client priority should be 20, 30, 40, etc. \n");
         return 1;
     }
 
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    client_priority = (client_num) * 10; // 2 -> 20, 3 -> 30, etc.
+    client_priority = (client_num);
 
     key_t key = ftok("groupchat", 65);
     msgqid = msgget(key, 0666);
