@@ -34,7 +34,7 @@ void add_first(list_t *list, contact_t *contact) {
     new_node->data = contact;
     new_node->prev = NULL;
     new_node->next = list->head;
-    
+
     if (list->head != NULL) {
         list->head->prev = new_node;
     } else {

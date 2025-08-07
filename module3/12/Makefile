@@ -10,10 +10,10 @@ all: clean build
 build:
 	$(CC) $(SRC) $(CC_FLAGS) $(EXEC)
 
-example1:
+example1: build
 	./$(EXEC) $(RUNARGS1)
 
-example2:
+example2: build
 	./$(EXEC) $(RUNARGS2)
 
 clean:

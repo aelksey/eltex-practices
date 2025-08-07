@@ -5,8 +5,8 @@
 
 typedef struct node {
     contact_t *data;
-    struct node *next;
-    struct node *prev;
+    node_t *next;
+    node_t *prev;
 } node_t;
 
 typedef struct list {
