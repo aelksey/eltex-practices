@@ -16,15 +16,30 @@
 #define BUFFER_SIZE 1024
 #define SERVER_PORT 9090
 #define CLIENT_PORT 9091
+#define POLL_TIMEOUT_MS 100
 
+// Global variables
 int raw_sock;
 volatile sig_atomic_t running = 1;
 char client_id[37]; // UUID string (36 chars + null terminator)
 
+// Function prototypes
+void handle_signal(int sig);
+unsigned short checksum(void *b, int len);
+void send_message(uint32_t dest_ip, uint16_t dest_port, const char *message);
+void set_nonblocking(int fd);
+void initialize_client(int argc, char *argv[]);
+void cleanup_client();
+void process_user_input(uint32_t server_ip);
+void process_server_response();
+void run_client_loop(uint32_t server_ip);
+
+// Signal handler
 void handle_signal(int sig) {
     running = 0;
 }
 
+// Checksum calculation
 unsigned short checksum(void *b, int len) {
     unsigned short *buf = b;
     unsigned int sum = 0;
@@ -40,6 +55,7 @@ unsigned short checksum(void *b, int len) {
     return result;
 }
 
+// Network functions
 void send_message(uint32_t dest_ip, uint16_t dest_port, const char *message) {
     char buffer[BUFFER_SIZE];
     struct iphdr *ip_header = (struct iphdr *)buffer;
@@ -85,6 +101,7 @@ void send_message(uint32_t dest_ip, uint16_t dest_port, const char *message) {
     }
 }
 
+// Socket configuration
 void set_nonblocking(int fd) {
     int flags = fcntl(fd, F_GETFL, 0);
     if (flags == -1) {
@@ -96,7 +113,8 @@ void set_nonblocking(int fd) {
     }
 }
 
-int main(int argc, char *argv[]) {
+// Initialization
+void initialize_client(int argc, char *argv[]) {
     if (argc != 2) {
         printf("Usage: %s <server_ip>\n", argv[0]);
         exit(EXIT_FAILURE);
@@ -124,15 +142,73 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    // Set socket to non-blocking
+    // Set sockets to non-blocking
     set_nonblocking(raw_sock);
     set_nonblocking(STDIN_FILENO);
+}
 
-    uint32_t server_ip = inet_addr(argv[1]);
+// Cleanup
+void cleanup_client() {
+    close(raw_sock);
+}
 
-    printf("Client started (ID: %s). Type messages to send to server.\n", client_id);
-    printf("Type 'exit' to quit.\n");
+// Input processing
+void process_user_input(uint32_t server_ip) {
+    char message[BUFFER_SIZE];
+    if (fgets(message, BUFFER_SIZE, stdin) == NULL) {
+        if (feof(stdin)) {
+            running = 0;
+            return;
+        }
+        return;
+    }
+    
+    message[strcspn(message, "\n")] = '\0'; // Remove newline
 
+    if (strcmp(message, "exit") == 0) {
+        running = 0;
+        return;
+    }
+
+    send_message(server_ip, SERVER_PORT, message);
+}
+
+// Server response processing
+void process_server_response() {
+    char buffer[BUFFER_SIZE];
+    struct sockaddr_in server_addr;
+    socklen_t addr_len = sizeof(server_addr);
+    
+    ssize_t recv_len = recvfrom(raw_sock, buffer, BUFFER_SIZE, 0, 
+                               (struct sockaddr *)&server_addr, &addr_len);
+    if (recv_len < 0) {
+        if (errno != EWOULDBLOCK && errno != EAGAIN) {
+            perror("recvfrom failed");
+        }
+        return;
+    }
+
+    // Parse IP header
+    struct iphdr *ip_header = (struct iphdr *)buffer;
+    if (ip_header->protocol != IPPROTO_UDP) return;
+
+    // Parse UDP header
+    struct udphdr *udp_header = (struct udphdr *)(buffer + (ip_header->ihl * 4));
+    char *data = buffer + (ip_header->ihl * 4) + sizeof(struct udphdr);
+    int data_len = recv_len - (ip_header->ihl * 4) - sizeof(struct udphdr);
+
+    // Check if it's for our client port
+    if (ntohs(udp_header->dest) != CLIENT_PORT) return;
+
+    // Null-terminate the data
+    if (data_len >= BUFFER_SIZE) data_len = BUFFER_SIZE - 1;
+    data[data_len] = '\0';
+
+    printf("Server response: %s\n", data);
+}
+
+// Main client loop
+void run_client_loop(uint32_t server_ip) {
     struct pollfd fds[2];
     fds[0].fd = STDIN_FILENO;
     fds[0].events = POLLIN;
@@ -140,7 +216,7 @@ int main(int argc, char *argv[]) {
     fds[1].events = POLLIN;
 
     while (running) {
-        int ret = poll(fds, 2, 100); // 100ms timeout
+        int ret = poll(fds, 2, POLL_TIMEOUT_MS);
         
         if (ret < 0) {
             perror("poll failed");
@@ -154,64 +230,30 @@ int main(int argc, char *argv[]) {
 
         // Check for user input
         if (fds[0].revents & POLLIN) {
-            char message[BUFFER_SIZE];
-            if (fgets(message, BUFFER_SIZE, stdin) == NULL) {
-                if (feof(stdin)) {
-                    running = 0;
-                    break;
-                }
-                continue;
-            }
-            
-            message[strcspn(message, "\n")] = '\0'; // Remove newline
-
-            if (strcmp(message, "exit") == 0) {
-                running = 0;
-                break;
-            }
-
-            send_message(server_ip, SERVER_PORT, message);
+            process_user_input(server_ip);
+            if (!running) break;
         }
 
         // Check for server response
         if (fds[1].revents & POLLIN) {
-            char buffer[BUFFER_SIZE];
-            struct sockaddr_in server_addr;
-            socklen_t addr_len = sizeof(server_addr);
-            
-            ssize_t recv_len = recvfrom(raw_sock, buffer, BUFFER_SIZE, 0, 
-                                       (struct sockaddr *)&server_addr, &addr_len);
-            if (recv_len < 0) {
-                if (errno != EWOULDBLOCK && errno != EAGAIN) {
-                    perror("recvfrom failed");
-                }
-                continue;
-            }
-
-            // Parse IP header
-            struct iphdr *ip_header = (struct iphdr *)buffer;
-            if (ip_header->protocol != IPPROTO_UDP) continue;
-
-            // Parse UDP header
-            struct udphdr *udp_header = (struct udphdr *)(buffer + (ip_header->ihl * 4));
-            char *data = buffer + (ip_header->ihl * 4) + sizeof(struct udphdr);
-            int data_len = recv_len - (ip_header->ihl * 4) - sizeof(struct udphdr);
-
-            // Check if it's for our client port
-            if (ntohs(udp_header->dest) != CLIENT_PORT) continue;
-
-            // Null-terminate the data
-            if (data_len >= BUFFER_SIZE) data_len = BUFFER_SIZE - 1;
-            data[data_len] = '\0';
-
-            printf("Server response: %s\n", data);
+            process_server_response();
         }
     }
+}
+
+int main(int argc, char *argv[]) {
+    initialize_client(argc, argv);
+    
+    uint32_t server_ip = inet_addr(argv[1]);
+    printf("Client started (ID: %s). Type messages to send to server.\n", client_id);
+    printf("Type 'exit' to quit.\n");
+
+    run_client_loop(server_ip);
 
     // Send shutdown message
     send_message(server_ip, SERVER_PORT, "SHUTDOWN");
     printf("Client shutting down...\n");
 
-    close(raw_sock);
+    cleanup_client();
     return 0;
 }
