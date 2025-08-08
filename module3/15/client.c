@@ -1,4 +1,4 @@
-// Same client code from task 15
+// Same client code from task 13
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -12,12 +12,19 @@
 
 #define BUFFER_SIZE 4096
 #define MAX_CLIENTS 10
+#define INVALID_SOCKET -1
+#define SOCKET_OK 0
 
 // Function prototypes
 void handle_client(int client_fd);
 int calculate(int a, int b, char op);
 void save_file(int client_fd, const char *filename);
 void display_file(const char *filename);
+int setup_server_socket(int portno);
+void initialize_client_sockets(int client_sockets[]);
+void add_new_connection(int sockfd, int client_sockets[], struct sockaddr_in *cli_addr, socklen_t clilen, fd_set *readfds);
+void handle_client_activity(int client_sockets[], fd_set *readfds);
+void cleanup_client(int client_sockets[], int index, struct sockaddr_in *cli_addr, fd_set *readfds);
 
 int nclients = 0;
 
@@ -96,39 +103,21 @@ void save_file(int client_fd, const char *filename) {
     send(client_fd, "OK", 2, 0);
 }
 
-int main(int argc, char *argv[]) {
-    int sockfd, new_sockfd, portno;
-    struct sockaddr_in serv_addr, cli_addr;
-    socklen_t clilen;
+int setup_server_socket(int portno) {
+    int sockfd;
+    struct sockaddr_in serv_addr;
     int opt = 1;
-    int max_fd, activity, i, valread;
-    fd_set readfds;
-    int client_sockets[MAX_CLIENTS];
     
-    // Initialize client sockets
-    for (i = 0; i < MAX_CLIENTS; i++) {
-        client_sockets[i] = 0;
-    }
-    
-    printf("TCP Server with I/O Multiplexing (select)\n");
-    
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
-        exit(1);
-    }
-
-    // Create master socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         error("ERROR opening socket");
     }
 
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
         error("ERROR on setsockopt");
     }
 
     bzero((char *) &serv_addr, sizeof(serv_addr));
-    portno = atoi(argv[1]);
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);
@@ -141,115 +130,166 @@ int main(int argc, char *argv[]) {
         error("ERROR on listen");
     }
     
-    clilen = sizeof(cli_addr);
     printf("Server started on port %d. Waiting for connections...\n", portno);
+    return sockfd;
+}
 
-    while (1) {
-        // Clear the socket set
-        FD_ZERO(&readfds);
-        
-        // Add master socket to set
-        FD_SET(sockfd, &readfds);
-        max_fd = sockfd;
-        
-        // Add child sockets to set
-        for (i = 0; i < MAX_CLIENTS; i++) {
-            if (client_sockets[i] > 0) {
-                FD_SET(client_sockets[i], &readfds);
-            }
-            if (client_sockets[i] > max_fd) {
-                max_fd = client_sockets[i];
-            }
+void initialize_client_sockets(int client_sockets[]) {
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        client_sockets[i] = 0;
+    }
+}
+
+void add_new_connection(int sockfd, int client_sockets[], struct sockaddr_in *cli_addr, socklen_t clilen, fd_set *readfds) {
+    int new_sockfd = accept(sockfd, (struct sockaddr *)cli_addr, &clilen);
+    if (new_sockfd < 0) {
+        perror("accept");
+        return;
+    }
+    
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (client_sockets[i] == 0) {
+            client_sockets[i] = new_sockfd;
+            nclients++;
+            
+            // Add the new socket to the read set
+            FD_SET(new_sockfd, readfds);
+            
+            char client_ip[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, &(cli_addr->sin_addr), client_ip, INET_ADDRSTRLEN);
+            printf("New connection from %s, socket fd %d\n", client_ip, new_sockfd);
+            printf("%d user(s) on-line\n", nclients);
+            return;
+        }
+    }
+    
+    printf("Too many connections, rejecting\n");
+    close(new_sockfd);
+}
+
+void cleanup_client(int client_sockets[], int index, struct sockaddr_in *cli_addr, fd_set *readfds) {
+    int client_fd = client_sockets[index];
+    
+    if (client_fd <= 0) return;
+    
+    // Clear the socket from the read set
+    FD_CLR(client_fd, readfds);
+    
+    if (cli_addr) {
+        char client_ip[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &(cli_addr->sin_addr), client_ip, INET_ADDRSTRLEN);
+        printf("Client %s disconnected, socket fd %d\n", client_ip, client_fd);
+    } else {
+        printf("Client disconnected, socket fd %d\n", client_fd);
+    }
+    
+    close(client_fd);
+    client_sockets[index] = 0;
+    nclients--;
+    printf("%d user(s) on-line\n", nclients);
+}
+
+void handle_client_command(int client_fd, char *buffer) {
+    if (strncmp(buffer, "file:", 5) == 0) {
+        char filename[256];
+        sscanf(buffer+5, "%255s", filename);
+        printf("Receiving file: %s\n", filename);
+        save_file(client_fd, filename);
+    } 
+    else if (strncmp(buffer, "calc:", 5) == 0) {
+        char op;
+        int a, b, result;
+        if (sscanf(buffer+5, "%d %c %d", &a, &op, &b) != 3) {
+            send(client_fd, "Invalid calculation format", 26, 0);
+            return;
         }
         
-        // Wait for activity on any socket
+        result = calculate(a, b, op);
+        char response[BUFFER_SIZE];
+        snprintf(response, BUFFER_SIZE, "Result: %d", result);
+        send(client_fd, response, strlen(response), 0);
+    } 
+    else if (strncmp(buffer, "quit", 4) == 0) {
+        printf("Client requested disconnect\n");
+        send(client_fd, "Goodbye", 7, 0);
+    } 
+    else {
+        send(client_fd, "Unknown command", 15, 0);
+    }
+}
+
+void setup_fd_set(int sockfd, int client_sockets[], fd_set *readfds, int *max_fd) {
+    FD_ZERO(readfds);
+    FD_SET(sockfd, readfds);
+    *max_fd = sockfd;
+    
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (client_sockets[i] > 0) {
+            FD_SET(client_sockets[i], readfds);
+            if (client_sockets[i] > *max_fd) {
+                *max_fd = client_sockets[i];
+            }
+        }
+    }
+}
+
+void handle_client_activity(int client_sockets[], fd_set *readfds) {
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        int client_fd = client_sockets[i];
+        
+        if (client_fd > 0 && FD_ISSET(client_fd, readfds)) {
+            char buffer[BUFFER_SIZE];
+            int valread = recv(client_fd, buffer, BUFFER_SIZE, 0);
+            
+            if (valread == 0) {
+                // Client disconnected
+                struct sockaddr_in cli_addr;
+                socklen_t clilen = sizeof(cli_addr);
+                getpeername(client_fd, (struct sockaddr*)&cli_addr, &clilen);
+                cleanup_client(client_sockets, i, &cli_addr, readfds);
+            } else if (valread > 0) {
+                buffer[valread] = '\0';
+                handle_client_command(client_fd, buffer);
+                
+                // Check if client sent quit command
+                if (strncmp(buffer, "quit", 4) == 0) {
+                    cleanup_client(client_sockets, i, NULL, readfds);
+                }
+            }
+        }
+    }
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <port>\n", argv[0]);
+        exit(1);
+    }
+
+    int portno = atoi(argv[1]);
+    int sockfd = setup_server_socket(portno);
+    int client_sockets[MAX_CLIENTS];
+    initialize_client_sockets(client_sockets);
+    
+    struct sockaddr_in cli_addr;
+    socklen_t clilen = sizeof(cli_addr);
+    fd_set readfds;
+    int max_fd, activity;
+
+    while (1) {
+        setup_fd_set(sockfd, client_sockets, &readfds, &max_fd);
+        
         activity = select(max_fd + 1, &readfds, NULL, NULL, NULL);
         if ((activity < 0) && (errno != EINTR)) {
             perror("select error");
+            continue;
         }
         
-        // If activity on master socket, new connection
         if (FD_ISSET(sockfd, &readfds)) {
-            new_sockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-            if (new_sockfd < 0) {
-                perror("accept");
-                continue;
-            }
-            
-            // Add new socket to array
-            for (i = 0; i < MAX_CLIENTS; i++) {
-                if (client_sockets[i] == 0) {
-                    client_sockets[i] = new_sockfd;
-                    nclients++;
-                    
-                    char client_ip[INET_ADDRSTRLEN];
-                    inet_ntop(AF_INET, &(cli_addr.sin_addr), client_ip, INET_ADDRSTRLEN);
-                    printf("New connection from %s, socket fd %d\n", client_ip, new_sockfd);
-                    printf("%d user(s) on-line\n", nclients);
-                    break;
-                }
-            }
-            
-            if (i == MAX_CLIENTS) {
-                printf("Too many connections, rejecting\n");
-                close(new_sockfd);
-            }
+            add_new_connection(sockfd, client_sockets, &cli_addr, clilen, &readfds);
         }
         
-        // Check other sockets for IO
-        for (i = 0; i < MAX_CLIENTS; i++) {
-            int client_fd = client_sockets[i];
-            
-            if (client_fd > 0 && FD_ISSET(client_fd, &readfds)) {
-                char buffer[BUFFER_SIZE];
-                int valread = recv(client_fd, buffer, BUFFER_SIZE, 0);
-                
-                if (valread == 0) {
-                    // Client disconnected
-                    getpeername(client_fd, (struct sockaddr*)&cli_addr, &clilen);
-                    char client_ip[INET_ADDRSTRLEN];
-                    inet_ntop(AF_INET, &(cli_addr.sin_addr), client_ip, INET_ADDRSTRLEN);
-                    
-                    printf("Client %s disconnected, socket fd %d\n", client_ip, client_fd);
-                    close(client_fd);
-                    client_sockets[i] = 0;
-                    nclients--;
-                    printf("%d user(s) on-line\n", nclients);
-                } else {
-                    buffer[valread] = '\0';
-                    
-                    if (strncmp(buffer, "file:", 5) == 0) {
-                        char filename[256];
-                        sscanf(buffer+5, "%255s", filename);
-                        printf("Receiving file: %s\n", filename);
-                        save_file(client_fd, filename);
-                    } 
-                    else if (strncmp(buffer, "calc:", 5) == 0) {
-                        char op;
-                        int a, b, result;
-                        if (sscanf(buffer+5, "%d %c %d", &a, &op, &b) != 3) {
-                            send(client_fd, "Invalid calculation format", 26, 0);
-                            continue;
-                        }
-                        
-                        result = calculate(a, b, op);
-                        char response[BUFFER_SIZE];
-                        snprintf(response, BUFFER_SIZE, "Result: %d", result);
-                        send(client_fd, response, strlen(response), 0);
-                    } 
-                    else if (strncmp(buffer, "quit", 4) == 0) {
-                        printf("Client requested disconnect\n");
-                        close(client_fd);
-                        client_sockets[i] = 0;
-                        nclients--;
-                        printf("%d user(s) on-line\n", nclients);
-                    } 
-                    else {
-                        send(client_fd, "Unknown command", 15, 0);
-                    }
-                }
-            }
-        }
+        handle_client_activity(client_sockets, &readfds);
     }
     
     close(sockfd);

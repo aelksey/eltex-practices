@@ -10,7 +10,7 @@ all: build run
 build:
 	$(CC) $(SRC) $(CC_FLAGS) $(EXEC)
 
-run:
+run: build
 	sudo ./$(EXEC) $(RUNARGS)
 
 clean:
