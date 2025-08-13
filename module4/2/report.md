@@ -532,64 +532,110 @@ Capture on link : Layer2Switch-1 port Ethernet2 to Layer2Switch-3 port Ethernet0
 
 Capture on link : Layer2Switch-1 port Ethernet3 to Layer2Switch-3 port Ethernet1 :
 
-![alt text](image.png)
-
 ![alt text](pictures/wireshark/2.png)
 
 Capture on link : Layer2Switch-1 port Ethernet4 to Layer2Switch-4 port Ethernet0 :
-
-![alt text](image-1.png)
 
 ![alt text](pictures/wireshark/3.png)
 
 Capture on link : Layer2Switch-1 port Ethernet5 to Layer2Switch-4 port Ethernet1 :
 
-![alt text](image-2.png)
-
 ![alt text](pictures/wireshark/4.png)
 
 Capture on link : Layer2Switch-1 port Ethernet6 to Layer2Switch-5 port Ethernet0 :
-
-![alt text](image-3.png)
 
 ![alt text](pictures/wireshark/5.png)
 
 Capture on link : Layer2Switch-1 port Ethernet7 to Layer2Switch-5 port Ethernet1 :
 
-![alt text](image-4.png)
-
 ![alt text](pictures/wireshark/6.png)
 
 Capture on link : Layer2Switch-1 port Ethernet0 to Layer2Switch-2 port Ethernet0 :
-
-![alt text](image-5.png)
 
 ![alt text](pictures/wireshark/7.png)
 
 Capture on link : Layer2Switch-1 port Ethernet1 to Layer2Switch-2 port Ethernet1 :
 
-![alt text](image-6.png)
-
 ![alt text](pictures/wireshark/8.png)
 
 #### Layer2Switch-2 Links:
 
-Capture on link : Layer2Switch-3 port Ethernet3 to Layer2Switch-2 port Ethernet3 :
+Capture on link : Layer2Switch-2 port Ethernet4 to Layer2Switch-4 port Ethernet2 :
 
-Capture on link : Layer2Switch-3 port Ethernet2 to Layer2Switch-2 port Ethernet2 :
+![alt text](pictures/wireshark/9.png)
 
-Capture on link : Layer2Switch-3 port Ethernet3 to Layer2Switch-2 port Ethernet3 :
+Capture on link : Layer2Switch-2 port Ethernet5 to Layer2Switch-4 port Ethernet3 :
 
-Capture on link : Layer2Switch-3 port Ethernet2 to Layer2Switch-2 port Ethernet2 :
+![alt text](pictures/wireshark/10.png)
+
+Capture on link : Layer2Switch-2 port Ethernet6 to Layer2Switch-5 port Ethernet2 :
+
+![alt text](pictures/wireshark/11.png)
+
+Capture on link : Layer2Switch-2 port Ethernet7 to Layer2Switch-5 port Ethernet3 :
+
+![alt text](pictures/wireshark/12.png)
 
 #### Layer2Switch-3 Links:
 
 Capture on link : Layer2Switch-3 port Ethernet3 to Layer2Switch-2 port Ethernet3 :
 
+![alt text](pictures/wireshark/13.png)
+
 Capture on link : Layer2Switch-3 port Ethernet2 to Layer2Switch-2 port Ethernet2 :
+
+![alt text](pictures/wireshark/14.png)
 
 ### 5) Изменить стоимость маршрута для порта RP произвольного назначенного (designated) коммутатора, повторить действия из п.3, результат сохранить в отдельный файл.
 
+Изменение стоимости маршрута корневого порта будем производить для устройства Layer2Switch-3(BID 24577):
 
+Ввод:
+
+```
+show spanning-tree
+enable
+configure terminal
+interface Gi0/0
+spanning-tree cost 8
+exit
+exit
+show spanning-tree
+write
+```
+
+Вывод:
+
+```
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/0               Root FWD 4         128.1    Shr
+
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Gi0/0               Altn BLK 8         128.1    Shr
+
+Building configuration...
+Compressed configuration from 5102 bytes to 1957 bytes[OK]
+vIOS-L2-01#
+*Aug 13 14:25:47.758: %GRUB-5-CONFIG_WRITING: GRUB configuration is being updated on disk. Please wait...
+*Aug 13 14:25:48.504: %GRUB-5-CONFIG_WRITTEN: GRUB configuration was written to disk successfully.
+
+```
+
+Изменённая топология:
+
+![alt text](pictures/5.png)
 
 ### 6) Сохранить файлы конфигураций устройств в виде набора файлов с именами, соответствующими именам устройств.
+
+```
+enable
+sh run
+```
+
+Файлы конфигурации сохранены в ./configs
+
