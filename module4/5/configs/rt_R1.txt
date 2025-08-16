@@ -1,0 +1,9 @@
+S    192.168.4.0/24 [1/0] via 192.168.0.2
+S    192.168.5.0/24 [1/0] via 192.168.0.2
+     10.0.0.0/30 is subnetted, 1 subnets
+C       10.0.0.0 is directly connected, FastEthernet0/0
+     192.168.0.0/30 is subnetted, 1 subnets
+C       192.168.0.0 is directly connected, FastEthernet1/0
+S    192.168.1.0/24 [1/0] via 10.0.0.2
+S    192.168.2.0/24 [1/0] via 10.0.0.2
+S    192.168.3.0/24 [1/0] via 192.168.0.2
