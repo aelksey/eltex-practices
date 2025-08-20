@@ -2,7 +2,7 @@
 #include <linux/kernel.h>    // included for KERN_INFO
 #include <linux/init.h>      // included for __init and __exit macros
 
-MODULE_LICENSE("Apache License 2.0 "); // Changed from "GPL" to "Apache License 2.0" 
+MODULE_LICENSE("Apache License 2.0"); // Changed from "GPL" to "Apache License 2.0" 
 MODULE_AUTHOR("Aleksey Vladimirov"); // Changed from "Lakshmanan" to "Aleksey Vladimirov"
 MODULE_DESCRIPTION("Eltex Module 5 Task 1"); // Changed from "A Simple Hello World module" to "Eltex Module 5 Task 1 module" 
 

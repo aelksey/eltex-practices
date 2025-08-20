@@ -12,10 +12,11 @@
         "unistd.h": "c",
         "file.h": "c",
         "stdlib.h": "c",
-        "ctype.h" : "c",
-        "arpa/inet.h" : "c",
-        "sys/socket.h" : "c",
-        "netinet/ip.h" : "c",
-        "netinet/udp.h" : "c",
+        "ctype.h": "c",
+        "arpa/inet.h": "c",
+        "sys/socket.h": "c",
+        "netinet/ip.h": "c",
+        "netinet/udp.h": "c",
+        "cstdlib": "c"
     }
 }
