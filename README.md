@@ -1,3 +1,5 @@
+### Летняя Школа Eltex "Системное программирование Linux"
+
 ### Eng : 🇬🇧
 
 ### Repo for my ❤️Eltex❤️ practices
