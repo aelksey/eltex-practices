@@ -64,6 +64,8 @@ static void proc_cleanup(void) {
     kfree(msg);
 }
  
+
+MODULE_DESCRIPTION("Eltex module 5 task 2");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Aleksey Vladimirov");
 module_init(proc_init);
