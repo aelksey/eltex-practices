@@ -1,8 +1,5 @@
-S    192.168.4.0/24 [1/0] via 10.0.0.1
-S    192.168.5.0/24 [1/0] via 10.0.0.1
      10.0.0.0/30 is subnetted, 2 subnets
 C       10.0.0.0 is directly connected, FastEthernet2/0
 C       10.0.4.0 is directly connected, FastEthernet1/0
-S    192.168.1.0/24 [1/0] via 10.0.4.1
+R    192.168.1.0/24 [120/1] via 10.0.4.1, 00:00:18, FastEthernet1/0
 C    192.168.2.0/24 is directly connected, FastEthernet0/0
-S    192.168.3.0/24 [1/0] via 10.0.0.1

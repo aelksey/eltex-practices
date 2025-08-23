@@ -1,8 +1,9 @@
+O IA 192.168.4.0/24 [110/3] via 10.0.3.1, 00:25:30, FastEthernet0/0
 C    192.168.5.0/24 is directly connected, FastEthernet1/0
      10.0.0.0/30 is subnetted, 3 subnets
-O IA    10.0.2.0 [110/2] via 10.0.3.1, 00:02:34, FastEthernet0/0
+O IA    10.0.2.0 [110/2] via 10.0.3.1, 00:25:30, FastEthernet0/0
 C       10.0.3.0 is directly connected, FastEthernet0/0
-O IA    10.0.5.0 [110/3] via 10.0.3.1, 00:02:34, FastEthernet0/0
+O IA    10.0.5.0 [110/3] via 10.0.3.1, 00:25:30, FastEthernet0/0
      192.168.0.0/30 is subnetted, 1 subnets
-O IA    192.168.0.8 [110/2] via 10.0.3.1, 00:02:34, FastEthernet0/0
-S*   0.0.0.0/0 [1/0] via 10.0.3.1
+O IA    192.168.0.8 [110/2] via 10.0.3.1, 00:25:30, FastEthernet0/0
+O IA 192.168.3.0/24 [110/4] via 10.0.3.1, 00:25:30, FastEthernet0/0

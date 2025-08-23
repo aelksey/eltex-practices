@@ -81,11 +81,6 @@ interface f1/0
 ip address 192.168.0.1 255.255.255.252
 no shutdown
 exit
-ip route 192.168.1.0 255.255.255.0 10.0.0.2
-ip route 192.168.2.0 255.255.255.0 10.0.0.2
-ip route 192.168.3.0 255.255.255.0 192.168.0.2
-ip route 192.168.4.0 255.255.255.0 192.168.0.2
-ip route 192.168.5.0 255.255.255.0 192.168.0.2
 exit
 write
 ```
@@ -103,11 +98,6 @@ interface f1/0
 ip address 10.0.1.1 255.255.255.252
 no shutdown
 exit
-ip route 192.168.1.0 255.255.255.0 192.168.0.6
-ip route 192.168.2.0 255.255.255.0 192.168.0.6
-ip route 192.168.3.0 255.255.255.0 10.0.1.2
-ip route 192.168.4.0 255.255.255.0 192.168.0.6
-ip route 192.168.5.0 255.255.255.0 192.168.0.6
 exit
 write
 ```
@@ -129,11 +119,6 @@ interface f2/0
 ip address 10.0.3.1 255.255.255.252
 no shutdown
 exit
-ip route 192.168.1.0 255.255.255.0 192.168.0.10
-ip route 192.168.2.0 255.255.255.0 192.168.0.10
-ip route 192.168.3.0 255.255.255.0 192.168.0.10
-ip route 192.168.4.0 255.255.255.0 10.0.2.2
-ip route 192.168.5.0 255.255.255.0 10.0.3.2
 exit
 write
 ```
@@ -151,7 +136,6 @@ interface f1/0
 ip address 10.0.4.1 255.255.255.252
 no shutdown
 exit
-ip route 0.0.0.0 0.0.0.0 10.0.4.2
 exit
 write
 ```
@@ -173,10 +157,6 @@ interface f2/0
 ip address 10.0.0.2 255.255.255.252
 no shutdown
 exit
-ip route 192.168.1.0 255.255.255.0 10.0.4.1
-ip route 192.168.3.0 255.255.255.0 10.0.0.1
-ip route 192.168.4.0 255.255.255.0 10.0.0.1
-ip route 192.168.5.0 255.255.255.0 10.0.0.1
 exit
 write
 ```
@@ -198,10 +178,6 @@ interface f2/0
 ip address 10.0.5.1 255.255.255.252
 no shutdown
 exit
-ip route 192.168.1.0 255.255.255.0 10.0.1.1
-ip route 192.168.2.0 255.255.255.0 10.0.1.1
-ip route 192.168.4.0 255.255.255.0 10.0.5.2
-ip route 192.168.5.0 255.255.255.0 10.0.1.1
 exit
 write
 ```
@@ -223,10 +199,6 @@ interface f2/0
 ip address 10.0.5.2 255.255.255.252
 no shutdown
 exit
-ip route 192.168.1.0 255.255.255.0 10.0.2.1
-ip route 192.168.2.0 255.255.255.0 10.0.2.1
-ip route 192.168.3.0 255.255.255.0 10.0.5.1
-ip route 192.168.5.0 255.255.255.0 10.0.2.1
 exit
 write
 ```
@@ -244,7 +216,6 @@ interface f1/0
 ip address 192.168.5.1 255.255.255.0
 no shutdown
 exit
-ip route 0.0.0.0 0.0.0.0 10.0.3.1
 exit
 write
 ```
@@ -492,10 +463,10 @@ ping 192.168.5.2 -c 1  # PC5 (через OSPF → Area 2)
 
 # Вывод
 
-84 bytes from 192.168.2.2 icmp_seq=1 ttl=62 time=23.932 ms
-84 bytes from 192.168.3.2 icmp_seq=1 ttl=62 time=25.736 ms
-84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=25.069 ms
-84 bytes from 192.168.5.2 icmp_seq=1 ttl=62 time=26.326 ms
+84 bytes from 192.168.2.2 icmp_seq=1 ttl=62 time=26.286 ms
+84 bytes from 192.168.3.2 icmp_seq=1 ttl=62 time=26.298 ms
+84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=27.289 ms
+84 bytes from 192.168.5.2 icmp_seq=1 ttl=62 time=23.846 ms
 
 
 ```
@@ -512,10 +483,10 @@ ping 192.168.5.2 -c 1  # PC5 (через OSPF → Area 2)
 
 # Вывод
 
-84 bytes from 192.168.1.2 icmp_seq=1 ttl=62 time=39.993 ms
-84 bytes from 192.168.3.2 icmp_seq=1 ttl=62 time=22.035 ms
-84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=29.100 ms
-84 bytes from 192.168.5.2 icmp_seq=1 ttl=62 time=28.031 ms
+84 bytes from 192.168.1.2 icmp_seq=1 ttl=62 time=29.859 ms
+84 bytes from 192.168.3.2 icmp_seq=1 ttl=62 time=24.974 ms
+84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=25.383 ms
+84 bytes from 192.168.5.2 icmp_seq=1 ttl=62 time=24.671 ms
 ```
 
 На PC3 (192.168.3.2)
@@ -530,10 +501,10 @@ ping 192.168.5.2 -c 1  # PC5 (через OSPF → Area 2)
 
 # Вывод
 
-84 bytes from 192.168.1.2 icmp_seq=1 ttl=62 time=39.507 ms
-84 bytes from 192.168.2.2 icmp_seq=1 ttl=62 time=30.317 ms
-84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=23.740 ms
-84 bytes from 192.168.5.2 icmp_seq=1 ttl=62 time=23.606 ms
+84 bytes from 192.168.1.2 icmp_seq=1 ttl=62 time=30.223 ms
+84 bytes from 192.168.2.2 icmp_seq=1 ttl=62 time=25.452 ms
+84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=24.988 ms
+84 bytes from 192.168.5.2 icmp_seq=1 ttl=62 time=25.442 ms
 
 ```
 
@@ -549,10 +520,10 @@ ping 192.168.5.2 -c 1  # PC5 (через OSPF → Area 2)
 
 # Вывод
 
-84 bytes from 192.168.1.2 icmp_seq=1 ttl=62 time=23.166 ms
-84 bytes from 192.168.2.2 icmp_seq=1 ttl=62 time=22.833 ms
-84 bytes from 192.168.3.2 icmp_seq=1 ttl=62 time=21.781 ms
-84 bytes from 192.168.5.2 icmp_seq=1 ttl=62 time=27.525 ms
+84 bytes from 192.168.1.2 icmp_seq=1 ttl=62 time=38.919 ms
+84 bytes from 192.168.2.2 icmp_seq=1 ttl=62 time=25.485 ms
+84 bytes from 192.168.3.2 icmp_seq=1 ttl=62 time=24.839 ms
+84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=25.496 ms
 
 ```
 
@@ -568,10 +539,10 @@ ping 192.168.4.2 -c 1  # PC4 (через Area 2 → OSPF → Totally Stubby)
 
 # Вывод
 
-84 bytes from 192.168.1.2 icmp_seq=1 ttl=62 time=22.211 ms
-84 bytes from 192.168.2.2 icmp_seq=1 ttl=62 time=28.945 ms
-84 bytes from 192.168.3.2 icmp_seq=1 ttl=62 time=27.987 ms
-84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=22.383 ms
+84 bytes from 192.168.1.2 icmp_seq=1 ttl=62 time=24.433 ms
+84 bytes from 192.168.2.2 icmp_seq=1 ttl=62 time=24.865 ms
+84 bytes from 192.168.3.2 icmp_seq=1 ttl=62 time=25.280 ms
+84 bytes from 192.168.4.2 icmp_seq=1 ttl=62 time=25.883 ms
 
 ```
 
@@ -588,11 +559,11 @@ ping 192.168.4.2 -c 1  # PC4 (через Area 2 → OSPF → Totally Stubby)
 
 Анализ захваченных пакетов RIP v2 и OSPF
 
-#### 1. Пакет RIP v2 (из image-1.png)
+#### 1. Пакет RIP v2 (pictures/wireshark/1.png)
 
 Тип: Response (ответ RIP v2).
 
-Источник: 10.0.4.1
+Источник: 10.0.4.2
 
 Назначение: Multicast 224.0.0.9 (стандартный адрес для RIP v2).
 
