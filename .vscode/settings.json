@@ -17,6 +17,8 @@
         "sys/socket.h": "c",
         "netinet/ip.h": "c",
         "netinet/udp.h": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "sched.h": "c",
+        "kdev_t.h": "c"
     }
 }
