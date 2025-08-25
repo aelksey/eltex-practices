@@ -19,6 +19,7 @@
         "netinet/udp.h": "c",
         "cstdlib": "c",
         "sched.h": "c",
-        "kdev_t.h": "c"
+        "kdev_t.h": "c",
+        "kd.h": "c"
     }
 }

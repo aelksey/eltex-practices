@@ -10,22 +10,29 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/stat.h>
- 
+#include <linux/bug.h>
+
 static struct timer_list my_timer; // Таймер
-static struct tty_driver *my_driver; // Структура терминального драйвера tty_driver
-static unsigned long kbledstatus = 0; // Текущее сотояние светодиодов (0 1 2 3)
-static int test;
+static struct tty_driver *my_driver; // Структура символьного устройства tty_driver
+static unsigned long kbledstatus = 0; // Текущее сотояние светодиодов
 
-#define BLINK_DELAY HZ / 5 // Задержка мигания раз в 5 сек 
-#define ALL_LEDS_ON 0x07 // Маска светодиодов (Все ВКЛ)
+// Blink Controls
+// 0 - all_leds : 1 - caps_lock : 2 - num_lock 
+static int state;
+
+#define BLINK_DELAY HZ / 5 // Задержка мигания раз в 5 сек
+#define ALL_LEDS_ON 0x07 // Маска светодиодов (Все ВКЛ) 
+#define NUMLOCK_LED 0x03 // Маска светодиодов (Все ВКЛ)
+#define CAPSLOCK_LED 0x05 // Маска светодиодов (Caps_Lock)
 #define RESTORE_LEDS 0xFF // Сбросить статус светодиододов на управление с клавиатуры
-#define PERMS S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH
+#define PERMS 0660
 
-// Объект kernel /sys/kernel/systest
-#define KOBJECT_NAME "systest"
+// Объект kernel /sys/kernel/blink/state
+#define KOBJECTDIR "blink"
 
 static struct kobject *example_kobject;
 
+static unsigned long get_status(int state);
 static void my_timer_func(struct timer_list *unused);
 static int __init kbleds_init(void);
 static void __exit kbleds_cleanup(void);
@@ -34,16 +41,21 @@ static ssize_t foo_store(struct kobject *kobj, struct kobj_attribute *attr, cons
 static int sys_init(void);
 static void sys_exit(void);
 
+static unsigned long get_status(int state){
+    unsigned long status;
+    if (state == 0) status = ALL_LEDS_ON;
+    if(state == 1 ) status = CAPSLOCK_LED;
+    if(state == 2) status = NUMLOCK_LED;
+    return status;
+}
+
 // Мигает светодиодом выполняя терминальную операцию KBSETLED для ioctl() на драйвере клавиатуры
 static void my_timer_func(struct timer_list *unused) { 
     struct tty_struct *t = vc_cons[fg_console].d->port.tty;
-    
-    // Переключаем статус светодиодов на тот, что получили из sysfs
-    kbledstatus = test;
-    
+
     // Переключаем статус светодиодов
-    //if (kbledstatus == ALL_LEDS_ON) kbledstatus = RESTORE_LEDS; 
-    //else kbledstatus = ALL_LEDS_ON;
+    if (kbledstatus == get_status(state)) kbledstatus = RESTORE_LEDS; 
+    else kbledstatus = get_status(state);
 
     (my_driver->ops->ioctl)(t, KDSETLED, kbledstatus);
     // Переменная jiffies содержит количество тактов с момента bootа системы 
@@ -82,25 +94,25 @@ static void __exit kbleds_cleanup(void){
 }
 
 static ssize_t foo_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
-    return sprintf(buf, "%d\n", test);
+    return sprintf(buf, "%d\n", state);
 }
  
 static ssize_t foo_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count){
-    sscanf(buf, "%du", &test);
+    sscanf(buf, "%du", &state);
     return count;
 }
  
-static struct kobj_attribute foo_attribute =__ATTR(test, PERMS, foo_show, foo_store);
+static struct kobj_attribute foo_attribute =__ATTR(state, PERMS, foo_show, foo_store);
  
 static int sys_init (void) {
     int error = 0;
  
-    example_kobject = kobject_create_and_add(KOBJECT_NAME, kernel_kobj);
+    example_kobject = kobject_create_and_add(KOBJECTDIR, kernel_kobj);
     if(!example_kobject) return -ENOMEM;
  
     error = sysfs_create_file(example_kobject, &foo_attribute.attr);
     if (error) {
-        pr_debug("failed to create the foo file in /sys/kernel/systest \n");
+        pr_debug("failed to create the state file in /sys/kernel/blink \n");
     }
  
     return error;

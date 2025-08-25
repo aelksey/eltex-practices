@@ -68,6 +68,17 @@ sudo dmesg | tail -10
 
 ### 4. Проверим работу модуля(Мигают ли светодиоды?)
 
+Режимы(state):
+
+0 - все светодиоды 1 - caps_lock 2 - num_lock в /sys/kernel/blink/state
+
+```
+sudo cat /sys/kernel/blink/state
+
+0
+```
+
+
 ![alt text](pictures/kernel_blink.gif)
 
 ### 5.Выгрузим модуль из ядра
