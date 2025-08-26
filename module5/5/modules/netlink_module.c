@@ -71,12 +71,12 @@ static void nl_recv_msg(struct sk_buff *skb){
     // Extract the message data
     msg = (struct custom_msg *)nlmsg_data(nlh);
 
-    printk(KERN_INFO "Received from userspace: %s, value: %d\n", 
-           msg->message, msg->value);
+    printk(KERN_INFO "Received from userspace: %s, value: %d\n", msg->message, msg->value);
 
     // Process the message (example: increment value and send back)
     struct custom_msg response;
-    strncpy(response.message, "Hello from kernel!", sizeof(response.message));
+    
+    strncpy(response.message, msg->message , sizeof(response.message));
     response.value = msg->value + 1;
 
     // Send response back to userspace
