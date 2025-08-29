@@ -48,10 +48,6 @@ sudo dmesg | tail -1
 
 ```
 
-#### Скриншот
-
-![alt text](pictures/1.png)
-
 ### 4.Проверим наличие файла в /proc
 
 ```
