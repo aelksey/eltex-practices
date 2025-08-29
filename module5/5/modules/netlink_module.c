@@ -12,7 +12,7 @@
 static struct sock *nl_sock = NULL;
 
 // Structure for our custom message
-struct custom_msg {
+static struct custom_msg {
     char message[256];
     int value;
 };
